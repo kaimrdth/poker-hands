@@ -709,7 +709,7 @@
                             // Color hearts and diamonds red, spades and clubs black
                             if ((newCard >= '🂡' && newCard <= '🂮') || (newCard >= '🂱' && newCard <= '🂾')) {
                                 cards[cardIndex].style.color = '#000000'; // spades and clubs black
-                            } else {
+                            } else if ((newCard >= '🃁' && newCard <= '🃎') || (newCard >= '🃑' && newCard <= '🃞')) {
                                 cards[cardIndex].style.color = '#ff0000'; // hearts and diamonds red
                             }
                             
