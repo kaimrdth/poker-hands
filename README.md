@@ -1,5 +1,7 @@
 # Poker Hands Visualizer
 
+![Demo](demo.gif)
+
 An interactive web application that generates and displays poker hands in real-time based on user input.
 
 ## Features
