@@ -2,7 +2,7 @@
 
 ![Demo](demo.gif)
 
-An interactive web application that generates and displays poker hands in real-time based on user input.
+Generates and displays poker hands in real-time based on user input.
 
 ## Features
 
@@ -15,7 +15,7 @@ An interactive web application that generates and displays poker hands in real-t
 
 ## Usage
 
-Open `index.html` in a web browser. Type any of these hand types:
+Type any of these hand types:
 - `pair`, `two pair`, `three of a kind`
 - `straight`, `flush`, `full house`
 - `four of a kind`, `straight flush`, `royal flush`
