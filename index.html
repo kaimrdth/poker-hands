@@ -226,6 +226,138 @@
             font-size: 11px;
         }
         
+        /* Mobile Responsive Styles */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                padding: 20px 10px;
+                min-height: 100vh;
+            }
+            
+            .input-section {
+                position: static;
+                transform: none;
+                width: 100%;
+                text-align: center;
+                font-size: 24px;
+                margin-bottom: 20px;
+                left: auto;
+                top: auto;
+            }
+            
+            .help-message {
+                position: static;
+                transform: none;
+                width: 100%;
+                text-align: center;
+                font-size: 14px;
+                margin: 10px 0 20px 0;
+                left: auto;
+                top: auto;
+                max-width: 300px;
+                margin-left: auto;
+                margin-right: auto;
+            }
+            
+            .hand-types {
+                position: static;
+                transform: none;
+                width: 100%;
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 10px;
+                margin: 20px 0;
+                right: auto;
+                top: auto;
+                font-size: 13px;
+            }
+            
+            .hand-type-item {
+                padding: 8px 12px;
+                background: #f8f8f8;
+                border-radius: 15px;
+                border: 1px solid #e0e0e0;
+                white-space: nowrap;
+                min-width: 80px;
+                text-align: center;
+                transition: all 0.2s ease;
+            }
+            
+            .hand-type-item:hover,
+            .hand-type-item.active {
+                background: #ff0000;
+                color: white;
+                border-color: #ff0000;
+            }
+            
+            .card {
+                width: 50px;
+                height: 74px;
+                font-size: 80px;
+                border-radius: 4px;
+            }
+            
+            .hand {
+                gap: 3px;
+                margin: 10px 0;
+            }
+            
+            #canvas {
+                gap: 15px;
+                width: 100%;
+            }
+            
+            .controls {
+                position: static;
+                width: 100%;
+                max-width: none;
+                margin-top: 20px;
+                background: rgba(248, 248, 248, 0.9);
+                text-align: center;
+                bottom: auto;
+                right: auto;
+            }
+            
+            #handInput {
+                font-size: 24px;
+                min-width: 200px;
+            }
+            
+            .input-overlay {
+                font-size: 24px;
+                min-width: 200px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .input-section {
+                font-size: 20px;
+            }
+            
+            .card {
+                width: 42px;
+                height: 62px;
+                font-size: 65px;
+            }
+            
+            .hand {
+                gap: 2px;
+            }
+            
+            .hand-type-item {
+                font-size: 12px;
+                padding: 6px 10px;
+                min-width: 70px;
+            }
+            
+            #handInput,
+            .input-overlay {
+                font-size: 20px;
+                min-width: 150px;
+            }
+        }
+        
     </style>
 </head>
 <body>
@@ -832,7 +964,7 @@
         // Track if hand was changed by hover
         let handChangedByHover = false;
         
-        // Add hover functionality to hand type items
+        // Add hover/touch functionality to hand type items
         const handTypeItems = document.querySelectorAll('.hand-type-item');
         handTypeItems.forEach(item => {
             item.addEventListener('mouseenter', () => {
@@ -842,15 +974,44 @@
                 handInput.placeholder = '';
                 handChangedByHover = true;
             });
+            
+            // Add touch/click support for mobile
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                const handType = item.getAttribute('data-hand');
+                displayHands(handType);
+                handInput.value = handType;
+                handInput.placeholder = '';
+                handChangedByHover = true;
+                handInput.focus();
+            });
+            
+            // Add touch feedback
+            item.addEventListener('touchstart', () => {
+                item.style.transform = 'scale(0.95)';
+            });
+            
+            item.addEventListener('touchend', () => {
+                item.style.transform = 'scale(1)';
+            });
         });
 
-        // Keep textbox always focused
-        document.addEventListener('click', () => {
+        // Keep textbox always focused on desktop, but allow blur on mobile
+        const isMobile = () => window.innerWidth <= 768;
+        
+        document.addEventListener('click', (e) => {
+            // Don't force focus on mobile if clicking hand type items
+            if (isMobile() && e.target.closest('.hand-type-item')) {
+                return;
+            }
             handInput.focus();
         });
         
         handInput.addEventListener('blur', () => {
-            setTimeout(() => handInput.focus(), 0);
+            // Don't force focus on mobile to allow virtual keyboard to hide
+            if (!isMobile()) {
+                setTimeout(() => handInput.focus(), 0);
+            }
         });
 
         // Initialize with empty state and focus input
