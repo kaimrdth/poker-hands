@@ -308,6 +308,20 @@
                 width: 100%;
             }
             
+            /* Add visual hierarchy for mobile */
+            .hand {
+                position: relative;
+                border-left: 3px solid transparent;
+                padding-left: 8px;
+                transition: border-color 0.3s ease;
+            }
+            
+            .hand:nth-child(1) { border-left-color: #ff0000; opacity: 1.0; }
+            .hand:nth-child(2) { border-left-color: #ff4444; opacity: 0.9; }
+            .hand:nth-child(3) { border-left-color: #ff8888; opacity: 0.8; }
+            .hand:nth-child(4) { border-left-color: #ffaaaa; opacity: 0.7; }
+            .hand:nth-child(5) { border-left-color: #ffcccc; opacity: 0.6; }
+            
             .controls {
                 position: static;
                 width: 100%;
@@ -502,6 +516,32 @@
             return 0;
         }
         
+        function getHandStrength(hand) {
+            const values = hand.map(card => getCardValue(card)).sort((a, b) => b - a);
+            
+            // For pairs: strength is the pair value
+            // For two pair: strength is higher pair * 100 + lower pair
+            // For three of a kind: strength is the trips value
+            // For straights: strength is the high card
+            // For flushes: strength is sum of all cards
+            // For full house: strength is trips * 100 + pair
+            // For four of a kind: strength is quads value
+            
+            const counts = {};
+            values.forEach(v => counts[v] = (counts[v] || 0) + 1);
+            const pairs = Object.keys(counts).filter(v => counts[v] === 2).map(Number).sort((a, b) => b - a);
+            const trips = Object.keys(counts).filter(v => counts[v] === 3).map(Number);
+            const quads = Object.keys(counts).filter(v => counts[v] === 4).map(Number);
+            
+            if (quads.length > 0) return quads[0] * 1000;
+            if (trips.length > 0 && pairs.length > 0) return trips[0] * 100 + pairs[0];
+            if (trips.length > 0) return trips[0] * 10;
+            if (pairs.length === 2) return pairs[0] * 100 + pairs[1];
+            if (pairs.length === 1) return pairs[0];
+            
+            return values[0]; // High card
+        }
+        
         function generatePokerHand(handType) {
             const shuffled = [...cards].sort(() => 0.5 - Math.random());
             
@@ -666,11 +706,11 @@
                             const newCard = newHands[handIndex][cardIndex];
                             cards[cardIndex].textContent = newCard;
                             
-                            // Color hearts and diamonds red
-                            if ((newCard >= '🃁' && newCard <= '🃎') || (newCard >= '🃑' && newCard <= '🃞')) {
-                                cards[cardIndex].style.color = '#ff0000';
+                            // Color hearts and diamonds red, spades and clubs black
+                            if ((newCard >= '🂡' && newCard <= '🂮') || (newCard >= '🂱' && newCard <= '🂾')) {
+                                cards[cardIndex].style.color = '#000000'; // spades and clubs black
                             } else {
-                                cards[cardIndex].style.color = '#000000';
+                                cards[cardIndex].style.color = '#ff0000'; // hearts and diamonds red
                             }
                             
                             resolve();
@@ -741,6 +781,11 @@
                     continue;
                 }
                 newHands.push(hand);
+            }
+            
+            // Sort hands by strength (strongest first for visual hierarchy)
+            if (handType.toLowerCase() !== 'random') {
+                newHands.sort((a, b) => getHandStrength(b) - getHandStrength(a));
             }
             
             // Handle existing hands with animation or create new ones
@@ -983,7 +1028,10 @@
                 handInput.value = handType;
                 handInput.placeholder = '';
                 handChangedByHover = true;
-                handInput.focus();
+                // Don't focus input on mobile to avoid keyboard popup
+                if (!isMobile()) {
+                    handInput.focus();
+                }
             });
             
             // Add touch feedback
