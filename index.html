@@ -706,11 +706,11 @@
                             const newCard = newHands[handIndex][cardIndex];
                             cards[cardIndex].textContent = newCard;
                             
-                            // Color hearts and diamonds red, spades and clubs black
-                            if ((newCard >= '🂡' && newCard <= '🂮') || (newCard >= '🂱' && newCard <= '🂾')) {
-                                cards[cardIndex].style.color = '#000000'; // spades and clubs black
-                            } else if ((newCard >= '🃁' && newCard <= '🃎') || (newCard >= '🃑' && newCard <= '🃞')) {
-                                cards[cardIndex].style.color = '#ff0000'; // hearts and diamonds red
+                            // Color spades and hearts black, diamonds and clubs red
+                            if ((newCard >= '🂡' && newCard <= '🂮') || (newCard >= '🃁' && newCard <= '🃎')) {
+                                cards[cardIndex].style.color = '#000000'; // spades and hearts black
+                            } else if ((newCard >= '🃑' && newCard <= '🃞') || (newCard >= '🂱' && newCard <= '🂾')) {
+                                cards[cardIndex].style.color = '#ff0000'; // diamonds and clubs red
                             }
                             
                             resolve();
