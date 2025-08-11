@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Poker Hands</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0px;
+            background: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+        
+        .container {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .input-section {
+            position: fixed;
+            left: 150px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 35px;
+            color: #333;
+            width: 120px;
+        }
+        
+        .help-message {
+            position: fixed;
+            left: 150px;
+            top: 60%;
+            transform: translateY(-50%);
+            font-size: 16px;
+            color: #999;
+            width: 300px;
+            opacity: 0;
+            transition: opacity 1.5s ease-in-out;
+        }
+        
+        .help-message.fade-in {
+            opacity: 1;
+        }
+        
+        .typing-text {
+            display: inline;
+        }
+        
+        
+        #handInput {
+            background: transparent;
+            border: none;
+            outline: none;
+            font-size: inherit;
+            font-family: inherit;
+            color: transparent;
+            min-width: 100px;
+            caret-color: transparent;
+            transition: none;
+        }
+        
+        #handInput.validated {
+            color: #ff0000;
+        }
+        
+        .input-container {
+            position: relative;
+        }
+        
+        .input-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            background: transparent;
+            border: none;
+            outline: none;
+            font-size: inherit;
+            font-family: inherit;
+            color: #333;
+            min-width: 100px;
+            white-space: pre;
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+        }
+        
+        .validated-part {
+            color: #ff0000;
+        }
+        
+        #canvas {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            align-items: center;
+        }
+        
+        .error-message {
+            color: #999;
+            font-size: 16px;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 1.5s ease-in-out;
+        }
+        
+        .error-message.fade-in {
+            opacity: .5;
+        }
+        
+        .hand {
+            display: flex;
+            flex-direction: row;
+            gap: 5px;
+            position: relative;
+        }
+        
+        .card {
+            width: 110px;
+            height: 162px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 170px;
+            background: white;
+            border: 0px solid #ffffff;
+            border-radius: 2px;
+            box-shadow: 0 0x 0px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        
+        .hand-types {
+            position: fixed;
+            right: 150px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 15px;
+            color: #000000bc;
+            width: 120px;
+            opacity: 0;
+            transition: opacity 1.5s ease-in-out;
+        }
+        
+        .hand-types.visible {
+            opacity: 1;
+        }
+        
+        .hand-type-item {
+            padding: 8px 0;
+            cursor: pointer;
+            transition: color .5s ease;
+        }
+        
+        .hand-type-item:hover {
+            color: #ff0000;
+        }
+        
+        .hand-type-item.active {
+            color: #ff0000;
+        }
+        
+        .hands-container {
+            transition: opacity 4.5s ease-in-out;
+        }
+        
+        .hands-container.fading {
+            opacity: 0;
+        }
+        
+        .card-back-overlay {
+            position: absolute;
+            width: 120px;
+            height: 162px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 170px;
+            color: rgb(2, 2, 192);
+            background: white;
+            border: 0px solid #ffffff;
+            border-radius: 2px;
+            box-shadow: 0 0x 0px rgba(0,0,0,0.1);
+            z-index: 10;
+        }
+        
+        .hand {
+            position: relative;
+        }
+        
+        .controls {
+            position: fixed;
+            bottom: 30px;
+            right: 40px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid #ffffff;
+            border-radius: 5px;
+            padding: 15px;
+            font-size: 12px;
+            color: #666666e6;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            max-width: 250px;
+            box-shadow: 0 1px 1px rgba(0,0,0,0.1);
+        }
+        
+        .controls.visible {
+            opacity: 1;
+        }
+        
+        .control-item {
+            margin: 4px 0;
+            display: flex;
+            justify-content: left;
+        }
+        
+        .control-key {
+            font-family: monospace;
+            background: #f5f5f5;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 11px;
+        }
+        
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="input-section">
+            <div class="input-container">
+                <input type="text" id="handInput" placeholder="poker hands" />
+                <div id="inputOverlay" class="input-overlay"></div>
+            </div>
+        </div>
+        <div id="canvas"></div>
+        <div class="hand-types">
+            <div class="hand-type-item" data-hand="royal flush">royal flush</div>
+            <div class="hand-type-item" data-hand="straight flush">straight flush</div>
+            <div class="hand-type-item" data-hand="four of a kind">four of a kind</div>
+            <div class="hand-type-item" data-hand="full house">full house</div>
+            <div class="hand-type-item" data-hand="flush">flush</div>
+            <div class="hand-type-item" data-hand="straight">straight</div>
+            <div class="hand-type-item" data-hand="three of a kind">three of a kind</div>
+            <div class="hand-type-item" data-hand="two pair">two pair</div>
+            <div class="hand-type-item" data-hand="pair">pair</div>
+            <div class="hand-type-item" data-hand="random">random</div>
+        </div>
+        
+        <div class="controls">
+            <div class="control-item">
+                <span>deal with</span>
+                <span class="control-key">enter</span>
+            </div>
+            <div class="control-item">
+                <span>pick new hand with</span>
+                <span class="control-key">↑↓</span>
+                <span>or start typing</span>
+
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const cards = [
+            '🂡', '🂢', '🂣', '🂤', '🂥', '🂦', '🂧', '🂨', '🂩', '🂪', '🂫', '🂭', '🂮', // spades
+            '🃁', '🃂', '🃃', '🃄', '🃅', '🃆', '🃇', '🃈', '🃉', '🃊', '🃋', '🃍', '🃎', // hearts
+            '🃑', '🃒', '🃓', '🃔', '🃕', '🃖', '🃗', '🃘', '🃙', '🃚', '🃛', '🃝', '🃞', // diamonds
+            '🂱', '🂲', '🂳', '🂴', '🂵', '🂶', '🂷', '🂸', '🂹', '🂺', '🂻', '🂽', '🂾'  // clubs
+        ];
+        
+        const canvas = document.getElementById('canvas');
+        const handInput = document.getElementById('handInput');
+        const inputOverlay = document.getElementById('inputOverlay');
+        
+        function updateInputColors(value) {
+            const validHandTypes = ['pair', 'two pair', 'three of a kind', 'straight', 'flush', 'full house', 'four of a kind', 'straight flush', 'royal flush', 'random'];
+            
+            // Always use overlay - input is always transparent
+            inputOverlay.style.display = 'block';
+            
+            // Check for straight flush edge case
+            if (value.startsWith('straight ') && !validHandTypes.includes(value.toLowerCase())) {
+                const flushPart = value.substring(9); // Everything after "straight "
+                if ('flush'.startsWith(flushPart.toLowerCase()) && flushPart.length > 0) {
+                    // Mixed coloring: red "straight " + black partial flush
+                    inputOverlay.innerHTML = '<span class="validated-part">straight </span>' + flushPart;
+                    return;
+                }
+            }
+            
+            // Normal coloring based on validation
+            if (validHandTypes.includes(value.toLowerCase()) || value.toLowerCase() === 'random') {
+                inputOverlay.innerHTML = '<span class="validated-part">' + value.toLowerCase() + '</span>';
+            } else {
+                inputOverlay.innerHTML = value;
+            }
+        }
+        
+        // Typing animation function
+        let currentTypingTimeout = null;
+        function typeMessage(element, text, speed = 50) {
+            return new Promise((resolve) => {
+                // Clear any existing typing animation
+                if (currentTypingTimeout) {
+                    clearTimeout(currentTypingTimeout);
+                    currentTypingTimeout = null;
+                }
+                
+                let i = 0;
+                element.textContent = '';
+                
+                function typeChar() {
+                    if (i < text.length) {
+                        element.textContent += text.charAt(i);
+                        i++;
+                        currentTypingTimeout = setTimeout(typeChar, speed);
+                    } else {
+                        currentTypingTimeout = null;
+                        resolve();
+                    }
+                }
+                typeChar();
+            });
+        }
+        
+        function getHandDefinition(handType) {
+            const definitions = {
+                'pair': 'two cards of the same rank',
+                'two pair': 'two pairs of different ranks', 
+                'three of a kind': 'three cards of the same rank',
+                'straight': 'five consecutive ranks',
+                'flush': 'five cards of the same suit',
+                'full house': 'three of a kind plus a pair',
+                'four of a kind': 'four cards of the same rank',
+                'straight flush': 'straight and flush combined',
+                'royal flush': 'A-K-Q-J-10 all same suit',
+                'random': 'random five cards'
+            };
+            return definitions[handType.toLowerCase()] || '';
+        }
+        
+        
+        // Auto-refresh variables
+        let currentHandType = null;
+        let autoRefreshInterval = null;
+        let isRefreshing = false;
+        let animationTimeouts = [];
+        
+        // Hand type navigation
+        const handTypes = ['royal flush', 'straight flush', 'four of a kind', 'full house', 'flush', 'straight', 'three of a kind', 'two pair', 'pair', 'random'];
+        let currentHandIndex = -1;
+        let userIsTyping = false;
+        let shouldClearOnNextType = false;
+        let definitionTimeout;
+        
+        function getCardValue(card) {
+            const spades = ['🂡', '🂢', '🂣', '🂤', '🂥', '🂦', '🂧', '🂨', '🂩', '🂪', '🂫', '🂭', '🂮'];
+            const hearts = ['🃁', '🃂', '🃃', '🃄', '🃅', '🃆', '🃇', '🃈', '🃉', '🃊', '🃋', '🃍', '🃎'];
+            const diamonds = ['🃑', '🃒', '🃓', '🃔', '🃕', '🃖', '🃗', '🃘', '🃙', '🃚', '🃛', '🃝', '🃞'];
+            const clubs = ['🂱', '🂲', '🂳', '🂴', '🂵', '🂶', '🂷', '🂸', '🂹', '🂺', '🂻', '🂽', '🂾'];
+            
+            if (spades.includes(card)) return spades.indexOf(card) + 1;
+            if (hearts.includes(card)) return hearts.indexOf(card) + 1;
+            if (diamonds.includes(card)) return diamonds.indexOf(card) + 1;
+            if (clubs.includes(card)) return clubs.indexOf(card) + 1;
+            return 0;
+        }
+        
+        function generatePokerHand(handType) {
+            const shuffled = [...cards].sort(() => 0.5 - Math.random());
+            
+            switch(handType.toLowerCase()) {
+                case 'pair':
+                    return generatePair(shuffled);
+                case 'two pair':
+                    return generateTwoPair(shuffled);
+                case 'three of a kind':
+                    return generateThreeOfAKind(shuffled);
+                case 'straight':
+                    return generateStraight();
+                case 'flush':
+                    return generateFlush();
+                case 'full house':
+                    return generateFullHouse(shuffled);
+                case 'four of a kind':
+                    return generateFourOfAKind(shuffled);
+                case 'straight flush':
+                    return generateStraightFlush();
+                case 'royal flush':
+                    return generateRoyalFlush();
+                default:
+                    return shuffled.slice(0, 5);
+            }
+        }
+        
+        function generatePair(shuffled) {
+            const pairValue = Math.floor(Math.random() * 13) + 1;
+            const pairCards = cards.filter(card => getCardValue(card) === pairValue);
+            const pair = pairCards.slice(0, 2);
+            const others = shuffled.filter(card => getCardValue(card) !== pairValue).slice(0, 3);
+            return [...pair, ...others];
+        }
+        
+        function generateTwoPair(shuffled) {
+            const value1 = Math.floor(Math.random() * 13) + 1;
+            let value2 = Math.floor(Math.random() * 12) + 1;
+            if (value2 >= value1) value2++;
+            
+            const pair1 = cards.filter(card => getCardValue(card) === value1).slice(0, 2);
+            const pair2 = cards.filter(card => getCardValue(card) === value2).slice(0, 2);
+            const kicker = shuffled.filter(card => getCardValue(card) !== value1 && getCardValue(card) !== value2)[0];
+            return [...pair1, ...pair2, kicker];
+        }
+        
+        function generateThreeOfAKind(shuffled) {
+            const tripValue = Math.floor(Math.random() * 13) + 1;
+            const trips = cards.filter(card => getCardValue(card) === tripValue).slice(0, 3);
+            const others = shuffled.filter(card => getCardValue(card) !== tripValue).slice(0, 2);
+            return [...trips, ...others];
+        }
+        
+        function generateStraight() {
+            const straights = [
+                [1, 2, 3, 4, 5], // A-2-3-4-5 (wheel)
+                [2, 3, 4, 5, 6],
+                [3, 4, 5, 6, 7],
+                [4, 5, 6, 7, 8],
+                [5, 6, 7, 8, 9],
+                [6, 7, 8, 9, 10],
+                [7, 8, 9, 10, 11],
+                [8, 9, 10, 11, 12],
+                [9, 10, 11, 12, 13],
+                [10, 11, 12, 13, 1] // 10-J-Q-K-A
+            ];
+            const straightValues = straights[Math.floor(Math.random() * straights.length)];
+            return straightValues.map(value => {
+                const suitCards = cards.filter(card => getCardValue(card) === value);
+                return suitCards[Math.floor(Math.random() * suitCards.length)];
+            });
+        }
+        
+        function generateFlush() {
+            const suits = [
+                cards.slice(0, 13),  // spades
+                cards.slice(13, 26), // hearts  
+                cards.slice(26, 39), // diamonds
+                cards.slice(39, 52)  // clubs
+            ];
+            const selectedSuit = suits[Math.floor(Math.random() * 4)];
+            const shuffledSuit = [...selectedSuit].sort(() => 0.5 - Math.random());
+            return shuffledSuit.slice(0, 5);
+        }
+        
+        function generateFullHouse(shuffled) {
+            const tripValue = Math.floor(Math.random() * 13) + 1;
+            let pairValue = Math.floor(Math.random() * 12) + 1;
+            if (pairValue >= tripValue) pairValue++;
+            
+            const trips = cards.filter(card => getCardValue(card) === tripValue).slice(0, 3);
+            const pair = cards.filter(card => getCardValue(card) === pairValue).slice(0, 2);
+            return [...trips, ...pair];
+        }
+        
+        function generateFourOfAKind(shuffled) {
+            const quadValue = Math.floor(Math.random() * 13) + 1;
+            const quads = cards.filter(card => getCardValue(card) === quadValue);
+            const kicker = shuffled.filter(card => getCardValue(card) !== quadValue)[0];
+            return [...quads, kicker];
+        }
+        
+        function generateStraightFlush() {
+            const suits = [
+                cards.slice(0, 13),  // spades
+                cards.slice(13, 26), // hearts
+                cards.slice(26, 39), // diamonds
+                cards.slice(39, 52)  // clubs
+            ];
+            const selectedSuit = suits[Math.floor(Math.random() * 4)];
+            
+            const straights = [
+                [0, 1, 2, 3, 4],     // A-2-3-4-5 (indices in suit)
+                [1, 2, 3, 4, 5],
+                [2, 3, 4, 5, 6],
+                [3, 4, 5, 6, 7],
+                [4, 5, 6, 7, 8],
+                [5, 6, 7, 8, 9],
+                [6, 7, 8, 9, 10],
+                [7, 8, 9, 10, 11],
+                [8, 9, 10, 11, 12]   // 9-10-J-Q-K
+            ];
+            const straightIndices = straights[Math.floor(Math.random() * straights.length)];
+            return straightIndices.map(index => selectedSuit[index]);
+        }
+        
+        function generateRoyalFlush() {
+            const suits = [
+                cards.slice(0, 13),  // spades
+                cards.slice(13, 26), // hearts
+                cards.slice(26, 39), // diamonds
+                cards.slice(39, 52)  // clubs
+            ];
+            const selectedSuit = suits[Math.floor(Math.random() * 4)];
+            
+            // Royal flush is 10-J-Q-K-A (indices 9, 10, 11, 12, 0)
+            const royalIndices = [9, 10, 11, 12, 0];
+            return royalIndices.map(index => selectedSuit[index]);
+        }
+        
+        function clearAnimationTimeouts() {
+            animationTimeouts.forEach(timeout => clearTimeout(timeout));
+            animationTimeouts = [];
+        }
+
+        async function animateCardReveal(handsContainer, newHands) {
+            const hands = handsContainer.querySelectorAll('.hand');
+            
+            for (let handIndex = 0; handIndex < hands.length; handIndex++) {
+                const hand = hands[handIndex];
+                const cards = hand.querySelectorAll('.card');
+                
+                for (let cardIndex = 0; cardIndex < cards.length; cardIndex++) {
+                    // Show card back in current position
+                    cards[cardIndex].textContent = '🂠';
+                    cards[cardIndex].style.color = 'navy';
+                    
+                    // Wait a moment, then reveal the actual card
+                    await new Promise(resolve => {
+                        const timeout = setTimeout(() => {
+                            // Update to the actual card content
+                            const newCard = newHands[handIndex][cardIndex];
+                            cards[cardIndex].textContent = newCard;
+                            
+                            // Color hearts and diamonds red
+                            if ((newCard >= '🃁' && newCard <= '🃎') || (newCard >= '🃑' && newCard <= '🃞')) {
+                                cards[cardIndex].style.color = '#ff0000';
+                            } else {
+                                cards[cardIndex].style.color = '#000000';
+                            }
+                            
+                            resolve();
+                        }, 105); // Pause on each card
+                        
+                        animationTimeouts.push(timeout);
+                    });
+                }
+            }
+        }
+        
+        function displayHands(handType, skipAutoRefresh = false) {
+            // Clear any existing animations and auto-refresh interval
+            clearAnimationTimeouts();
+            if (autoRefreshInterval && !skipAutoRefresh) {
+                clearInterval(autoRefreshInterval);
+                autoRefreshInterval = null;
+            }
+            
+            // Force reset refresh state to allow immediate new animation
+            isRefreshing = false;
+            
+            // Update current hand type
+            if (!skipAutoRefresh) {
+                currentHandType = handType;
+                currentHandIndex = handTypes.indexOf(handType.toLowerCase());
+                
+                // Update active state on hand type items
+                document.querySelectorAll('.hand-type-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                document.querySelectorAll(`.hand-type-item[data-hand="${handType}"]`).forEach(item => {
+                    item.classList.add('active');
+                });
+            }
+            
+            // Validate hand type
+            const validHandTypes = ['pair', 'two pair', 'three of a kind', 'straight', 'flush', 'full house', 'four of a kind', 'straight flush', 'royal flush'];
+            if (!validHandTypes.includes(handType.toLowerCase()) && handType.toLowerCase() !== 'random') {
+                canvas.innerHTML = '';
+                currentHandType = null;
+                
+                // Only show error message if user is not actively typing and no cards are being dealt
+                if (!userIsTyping && !isRefreshing && handType.length > 0) {
+                    const errorDiv = document.querySelector('.help-message') || document.createElement('div');
+                    if (!document.querySelector('.help-message')) {
+                        errorDiv.className = 'help-message';
+                        document.body.appendChild(errorDiv);
+                    }
+                    
+                    errorDiv.classList.add('fade-in');
+                    typeMessage(errorDiv, 'Try typing: ' + validHandTypes.join(', ') + ', or random', 30);
+                    
+                    setTimeout(() => {
+                        errorDiv.classList.remove('fade-in');
+                    }, 6000);
+                }
+                
+                return;
+            }
+            
+            // Generate new hands
+            const newHands = [];
+            for (let i = 0; i < 5; i++) {
+                const hand = generatePokerHand(handType);
+                if (!hand || hand.length !== 5) {
+                    console.error('Invalid hand generated:', hand);
+                    continue;
+                }
+                newHands.push(hand);
+            }
+            
+            // Handle existing hands with animation or create new ones
+            const existingContainer = canvas.querySelector('.hands-container');
+            if (existingContainer && !isRefreshing) {
+                isRefreshing = true;
+                
+                // Animate the card reveal
+                animateCardReveal(existingContainer, newHands).then(() => {
+                    isRefreshing = false;
+                });
+            } else if (!isRefreshing) {
+                // Create hands container for first time - start blank
+                isRefreshing = true;
+                
+                const handsContainer = document.createElement('div');
+                handsContainer.className = 'hands-container';
+                
+                newHands.forEach(hand => {
+                    const handDiv = document.createElement('div');
+                    handDiv.className = 'hand';
+                    
+                    hand.forEach(card => {
+                        const cardDiv = document.createElement('div');
+                        cardDiv.className = 'card';
+                        cardDiv.textContent = ''; // Start completely blank
+                        cardDiv.style.color = '#000000';
+                        
+                        handDiv.appendChild(cardDiv);
+                    });
+                    
+                    handsContainer.appendChild(handDiv);
+                });
+                
+                canvas.innerHTML = '';
+                canvas.appendChild(handsContainer);
+                
+                // Show hand types during first hand generation
+                setTimeout(() => {
+                    document.querySelector('.hand-types').classList.add('visible');
+                }, 500);
+                
+                // Show controls after first hand is dealt
+                setTimeout(() => {
+                    document.querySelector('.controls').classList.add('visible');
+                }, 1000);
+                
+                // Animate the reveal on blank canvas
+                setTimeout(() => {
+                    animateCardReveal(handsContainer, newHands).then(() => {
+                        isRefreshing = false;
+                    });
+                }, 50);
+            }
+            
+            // Start auto-refresh for valid hand types (not for random or during refresh)
+            if (!skipAutoRefresh && handType.toLowerCase() !== 'random') {
+                autoRefreshInterval = setInterval(() => {
+                    if (!isRefreshing && currentHandType) {
+                        displayHands(currentHandType, true);
+                    }
+                }, 12000);
+            }
+        }
+        
+        handInput.addEventListener('keydown', (e) => {
+            if (handChangedByHover && e.key.length === 1) {
+                handInput.value = '';
+                handChangedByHover = false;
+            }
+            
+            // Clear placeholder after first interaction
+            if (handInput.placeholder === 'poker hands') {
+                handInput.placeholder = '';
+            }
+            
+            // Handle straight -> straight flush edge case
+            if (e.key.length === 1 && handInput.value === 'straight') {
+                if (e.key.toLowerCase() === ' ') {
+                    e.preventDefault();
+                    handInput.value = 'straight ';
+                    handInput.setSelectionRange(handInput.value.length, handInput.value.length);
+                    shouldClearOnNextType = false; // Don't clear for straight flush
+                } else if (e.key.toLowerCase() === 'f') {
+                    e.preventDefault();
+                    handInput.value = 'straight f';
+                    handInput.setSelectionRange(handInput.value.length, handInput.value.length);
+                    shouldClearOnNextType = false; // Don't clear for straight flush
+                }
+            }
+            
+            // Handle Enter key to re-trigger current hand
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                if (currentHandType) {
+                    displayHands(currentHandType);
+                    // Don't retrigger definitions - user already knows this hand type
+                }
+            }
+            
+            // Handle arrow key navigation
+            if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+                e.preventDefault();
+                
+                // Hide any existing definition immediately
+                const helpDiv = document.querySelector('.help-message');
+                if (helpDiv) {
+                    helpDiv.classList.remove('fade-in');
+                }
+                
+                // Clear any pending definition timeout
+                if (definitionTimeout) {
+                    clearTimeout(definitionTimeout);
+                    definitionTimeout = null;
+                }
+                
+                if (e.key === 'ArrowUp') {
+                    currentHandIndex = currentHandIndex <= 0 ? handTypes.length - 1 : currentHandIndex - 1;
+                } else {
+                    currentHandIndex = currentHandIndex >= handTypes.length - 1 ? 0 : currentHandIndex + 1;
+                }
+                
+                const newHandType = handTypes[currentHandIndex];
+                handInput.value = newHandType;
+                updateInputColors(newHandType);
+                displayHands(newHandType);
+                
+                // Show definition immediately for arrow navigation
+                if (definitionTimeout) {
+                    clearTimeout(definitionTimeout);
+                }
+                definitionTimeout = setTimeout(() => {
+                    const helpDiv = document.querySelector('.help-message');
+                    if (helpDiv) {
+                        helpDiv.classList.add('fade-in');
+                        const definition = getHandDefinition(newHandType);
+                        typeMessage(helpDiv, definition, 40);
+                        // Definition stays visible until new hand type is selected
+                    }
+                }, 100); // Show immediately for arrow navigation
+            }
+        });
+        
+        handInput.addEventListener('input', (e) => {
+            let value = e.target.value.trim();
+            userIsTyping = true;
+            
+            // Clear input if flag is set (after validated hand)
+            if (shouldClearOnNextType) {
+                handInput.value = e.data || '';
+                value = e.data || '';
+                shouldClearOnNextType = false;
+                handInput.classList.remove('validated');
+            }
+            
+            // Clear placeholder after first interaction
+            if (handInput.placeholder === 'poker hands') {
+                handInput.placeholder = '';
+            }
+            
+            // Hide help/definition message when user starts typing new hand
+            const helpDiv = document.querySelector('.help-message');
+            if (helpDiv) {
+                helpDiv.classList.remove('fade-in');
+            }
+            
+            // Clear any pending definition timeout
+            if (definitionTimeout) {
+                clearTimeout(definitionTimeout);
+                definitionTimeout = null;
+            }
+            
+            // Update input colors for current value
+            updateInputColors(value);
+            
+            if (value) {
+                const validHandTypes = ['pair', 'two pair', 'three of a kind', 'straight', 'flush', 'full house', 'four of a kind', 'straight flush', 'royal flush'];
+                if (validHandTypes.includes(value.toLowerCase()) || value.toLowerCase() === 'random') {
+                    // Cancel initial help message if user types valid hand before it appears
+                    if (initialHelpTimeout) {
+                        clearTimeout(initialHelpTimeout);
+                        helpMessageShown = true;
+                    }
+                    
+                    // Only trigger animation for valid hands
+                    displayHands(value);
+                    
+                    // Show current hand type without selection
+                    setTimeout(() => {
+                        handInput.value = value.toLowerCase();
+                        shouldClearOnNextType = true;
+                        updateInputColors(value.toLowerCase());
+                        
+                        // Show definition after 3 seconds
+                        if (definitionTimeout) {
+                            clearTimeout(definitionTimeout);
+                        }
+                        definitionTimeout = setTimeout(() => {
+                            const helpDiv = document.querySelector('.help-message');
+                            if (helpDiv) {
+                                helpDiv.classList.add('fade-in');
+                                const definition = getHandDefinition(value.toLowerCase());
+                                typeMessage(helpDiv, definition, 40);
+                                // Definition stays visible until new hand type is selected
+                            }
+                        }, 50);
+                    }, 50);
+                }
+                // Don't call displayHands for invalid partial input
+            } else {
+                // Don't clear canvas or stop animations when input is empty
+                // Let current hand continue dealing
+            }
+            
+            // Reset typing flag after a longer delay to prevent error messages during typing
+            setTimeout(() => {
+                userIsTyping = false;
+            }, 2000);
+        });
+        
+        // Track if hand was changed by hover
+        let handChangedByHover = false;
+        
+        // Add hover functionality to hand type items
+        const handTypeItems = document.querySelectorAll('.hand-type-item');
+        handTypeItems.forEach(item => {
+            item.addEventListener('mouseenter', () => {
+                const handType = item.getAttribute('data-hand');
+                displayHands(handType);
+                handInput.value = handType;
+                handInput.placeholder = '';
+                handChangedByHover = true;
+            });
+        });
+
+        // Keep textbox always focused
+        document.addEventListener('click', () => {
+            handInput.focus();
+        });
+        
+        handInput.addEventListener('blur', () => {
+            setTimeout(() => handInput.focus(), 0);
+        });
+
+        // Initialize with empty state and focus input
+        canvas.innerHTML = '';
+        handInput.focus();
+        
+        // Create help message near input
+        const helpDiv = document.createElement('div');
+        helpDiv.className = 'help-message';
+        document.body.appendChild(helpDiv);
+        
+        let helpMessageShown = false;
+        let initialHelpTimeout;
+        
+        // Show initial help message sequence with typing animation
+        initialHelpTimeout = setTimeout(() => {
+            if (!helpMessageShown) {
+                helpDiv.classList.add('fade-in');
+                typeMessage(helpDiv, 'Try typing: pair, two pair, three of a kind, straight, flush, full house, four of a kind, straight flush, royal flush, or random', 30);
+                helpMessageShown = true;
+                
+                // Fade out help message after it's shown
+                setTimeout(() => {
+                    helpDiv.classList.remove('fade-in');
+                }, 6000);
+            }
+        }, 2000);
+    </script>
+</body>
+</html>
