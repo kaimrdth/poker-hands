@@ -519,6 +519,20 @@
             return value === 1 ? 14 : value;
         }
         
+        function isHandStraight(hand) {
+            const values = hand.map(card => getCardValue(card)).sort((a, b) => a - b);
+            
+            // Check regular straight
+            for (let i = 0; i < values.length - 1; i++) {
+                if (values[i + 1] - values[i] !== 1) {
+                    // Check for wheel straight (A-2-3-4-5)
+                    if (values.join(',') === '2,3,4,5,14') return true;
+                    return false;
+                }
+            }
+            return true;
+        }
+        
         function getHandStrength(hand) {
             const values = hand.map(card => getCardValue(card)).sort((a, b) => b - a);
             
@@ -611,11 +625,26 @@
             
             const pairCards = cards.filter(card => getCardValue(card) === pairValue);
             const pair = pairCards.slice(0, 2);
-            const others = shuffled.filter(card => getCardValue(card) !== pairValue).slice(0, 3);
+            
+            // Ensure exactly one pair by selecting three different values for kickers
+            const availableValues = possibleValues.filter(v => v !== pairValue);
+            const kickerValues = [];
+            
+            // Select 3 different values for kickers
+            while (kickerValues.length < 3 && availableValues.length > 0) {
+                const randomIndex = Math.floor(Math.random() * availableValues.length);
+                kickerValues.push(availableValues.splice(randomIndex, 1)[0]);
+            }
+            
+            // Get one card for each kicker value
+            const kickers = kickerValues.map(value => {
+                const valueCards = cards.filter(card => getCardValue(card) === value);
+                return valueCards[Math.floor(Math.random() * valueCards.length)];
+            });
             
             // Sort kickers by value (highest first)
-            others.sort((a, b) => getCardValue(b) - getCardValue(a));
-            return [...pair, ...others];
+            kickers.sort((a, b) => getCardValue(b) - getCardValue(a));
+            return [...pair, ...kickers];
         }
         
         function generateTwoPair(shuffled) {
@@ -646,11 +675,27 @@
             if (tripValue === 1) tripValue = 14;
             
             const trips = cards.filter(card => getCardValue(card) === tripValue).slice(0, 3);
-            const others = shuffled.filter(card => getCardValue(card) !== tripValue).slice(0, 2);
+            
+            // Ensure exactly three of a kind by selecting two different values for kickers
+            const possibleValues = [14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2];
+            const availableValues = possibleValues.filter(v => v !== tripValue);
+            const kickerValues = [];
+            
+            // Select 2 different values for kickers
+            while (kickerValues.length < 2 && availableValues.length > 0) {
+                const randomIndex = Math.floor(Math.random() * availableValues.length);
+                kickerValues.push(availableValues.splice(randomIndex, 1)[0]);
+            }
+            
+            // Get one card for each kicker value
+            const kickers = kickerValues.map(value => {
+                const valueCards = cards.filter(card => getCardValue(card) === value);
+                return valueCards[Math.floor(Math.random() * valueCards.length)];
+            });
             
             // Sort kickers by value (highest first)
-            others.sort((a, b) => getCardValue(b) - getCardValue(a));
-            return [...trips, ...others];
+            kickers.sort((a, b) => getCardValue(b) - getCardValue(a));
+            return [...trips, ...kickers];
         }
         
         function generateStraight() {
@@ -681,8 +726,18 @@
                 cards.slice(39, 52)  // clubs
             ];
             const selectedSuit = suits[Math.floor(Math.random() * 4)];
-            const shuffledSuit = [...selectedSuit].sort(() => 0.5 - Math.random());
-            return shuffledSuit.slice(0, 5);
+            
+            let hand;
+            let attempts = 0;
+            
+            // Keep generating until we get a flush that's not a straight
+            do {
+                const shuffledSuit = [...selectedSuit].sort(() => 0.5 - Math.random());
+                hand = shuffledSuit.slice(0, 5);
+                attempts++;
+            } while (isHandStraight(hand) && attempts < 50);
+            
+            return hand;
         }
         
         function generateFullHouse(shuffled) {
