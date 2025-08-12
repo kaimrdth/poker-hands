@@ -9,7 +9,7 @@
         body {
             margin: 0;
             padding: 0px;
-            background: #faf9f8;
+            background: #f8f8f8;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
         }
         
@@ -126,11 +126,11 @@
         
         .hand.winner {
             background: rgba(34, 197, 94, 0);
-            border: 1px solid rgba(0, 255, 94, 0.753);
+            border: 1.5px solid rgba(6, 174, 67, 0.897);
             box-shadow: 0 0 0px rgba(34, 197, 94, 0.2);
             transition: all 1.3s ease;
             padding-top: 10px;
-            padding-bottom: 10px;
+            padding-bottom: 15px;
         }
         
         .card {
@@ -139,7 +139,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 130px;
+            font-size: 145px;
             background: rgba(255, 255, 255, 0);
             border: 0px solid #ffffff;
             border-radius: 2px;
@@ -161,15 +161,15 @@
         
         .hand-types.visible {
             opacity: 1;
-        }
+        } 
         
         .winner-text {
             position: absolute;
             left: 10px;
-            top: 1%;
+            top: 0%;
             transform: translateY(50%);
-            color: rgba(30, 211, 96, 0.813);
-            font-size: 12px;
+            color: rgb(6, 174, 67);
+            font-size: 14px;
             font-weight: 500;
             opacity: 0;
             transition: opacity 1.2s ease;
@@ -271,12 +271,13 @@
             }
         }
         
-        /* Mobile Responsive Styles */
+        /* Mobile Responsive Styles - Minimalist Design */
         @media (max-width: 768px) {
             .container {
-                flex-direction: column;
-                padding: 20px 10px;
+                padding: 40px 20px;
                 min-height: 100vh;
+                justify-content: flex-start;
+                align-items: center;
             }
             
             .input-section {
@@ -284,8 +285,8 @@
                 transform: none;
                 width: 100%;
                 text-align: center;
-                font-size: 24px;
-                margin-bottom: 20px;
+                font-size: 28px;
+                margin-bottom: 30px;
                 left: auto;
                 top: auto;
             }
@@ -296,124 +297,183 @@
                 width: 100%;
                 text-align: center;
                 font-size: 14px;
-                margin: 10px 0 20px 0;
+                margin: 0 auto 40px auto;
                 left: auto;
                 top: auto;
-                max-width: 300px;
-                margin-left: auto;
-                margin-right: auto;
+                max-width: 320px;
+                color: #999;
             }
             
             .hand-types {
                 position: static;
                 transform: none;
                 width: 100%;
-                display: flex;
-                flex-wrap: wrap;
-                justify-content: center;
-                gap: 10px;
-                margin: 20px 0;
+                text-align: center;
+                margin: 30px 0;
                 right: auto;
                 top: auto;
-                font-size: 13px;
+                font-size: 14px;
+                line-height: 1.8;
+                color: #666;
             }
             
             .hand-type-item {
-                padding: 8px 12px;
-                background: #f8f8f8;
-                border-radius: 15px;
-                border: 1px solid #e0e0e0;
+                display: inline;
+                padding: 0;
+                background: none;
+                border: none;
+                margin: 0 8px;
+                cursor: pointer;
+                transition: color 0.3s ease;
                 white-space: nowrap;
-                min-width: 80px;
-                text-align: center;
-                transition: all 0.2s ease;
             }
             
             .hand-type-item:hover,
             .hand-type-item.active {
-                background: #ff0000;
-                color: white;
-                border-color: #ff0000;
+                color: #ff0000;
+                background: none;
+                border: none;
+            }
+            
+            .hand-type-item:not(:last-child):after {
+                content: " ·";
+                color: #ccc;
+                margin-left: 8px;
             }
             
             .card {
-                width: 50px;
-                height: 74px;
-                font-size: 80px;
-                border-radius: 4px;
+                width: 70px;
+                height: 96px;
+                font-size: 105px;
+                border-radius: 3px;
             }
             
             .hand {
-                gap: 3px;
-                margin: 10px 0;
+                gap: 5px;
+                margin: 18px 0;
+                padding: 0;
+                border: none;
+                opacity: 1;
+                justify-content: center;
             }
             
             #canvas {
                 gap: 15px;
                 width: 100%;
+                max-width: 400px;
             }
-            
-            /* Add visual hierarchy for mobile */
-            .hand {
-                position: relative;
-                border-left: 3px solid transparent;
-                padding-left: 8px;
-                transition: border-color 0.3s ease;
-            }
-            
-            .hand:nth-child(1) { border-left-color: #ff0000; opacity: 1.0; }
-            .hand:nth-child(2) { border-left-color: #ff4444; opacity: 0.9; }
-            .hand:nth-child(3) { border-left-color: #ff8888; opacity: 0.8; }
-            .hand:nth-child(4) { border-left-color: #ffaaaa; opacity: 0.7; }
-            .hand:nth-child(5) { border-left-color: #ffcccc; opacity: 0.6; }
             
             .controls {
                 position: static;
                 width: 100%;
-                max-width: none;
-                margin-top: 20px;
-                background: rgba(248, 248, 248, 0.9);
+                max-width: 300px;
+                margin: 40px auto 0 auto;
+                background: rgba(255, 255, 255, 0.5);
                 text-align: center;
                 bottom: auto;
                 right: auto;
+                border: 1px solid #f0f0f0;
+                font-size: 11px;
+                padding: 12px;
             }
             
             #handInput {
-                font-size: 24px;
-                min-width: 200px;
+                font-size: 28px;
+                min-width: 250px;
             }
             
             .input-overlay {
-                font-size: 24px;
-                min-width: 200px;
+                font-size: 28px;
+                min-width: 250px;
             }
         }
         
         @media (max-width: 480px) {
+            .container {
+                padding: 30px 15px;
+            }
+            
             .input-section {
-                font-size: 20px;
+                font-size: 24px;
+                margin-bottom: 25px;
             }
             
             .card {
-                width: 42px;
-                height: 62px;
-                font-size: 65px;
+                width: 58px;
+                height: 80px;
+                font-size: 88px;
             }
             
             .hand {
-                gap: 2px;
+                gap: 4px;
+                margin: 14px 0;
+                justify-content: center;
+            }
+            
+            #canvas {
+                max-width: 350px;
+            }
+            
+            .hand-types {
+                font-size: 13px;
+                margin: 25px 0;
             }
             
             .hand-type-item {
-                font-size: 12px;
-                padding: 6px 10px;
-                min-width: 70px;
+                margin: 0 6px;
             }
             
             #handInput,
             .input-overlay {
-                font-size: 20px;
-                min-width: 150px;
+                font-size: 24px;
+                min-width: 220px;
+            }
+            
+            .controls {
+                max-width: 280px;
+                margin-top: 30px;
+                padding: 10px;
+            }
+        }
+        
+        @media (max-width: 360px) {
+            .container {
+                padding: 25px 12px;
+            }
+            
+            .input-section {
+                font-size: 22px;
+            }
+            
+            .card {
+                width: 52px;
+                height: 72px;
+                font-size: 78px;
+            }
+            
+            .hand {
+                gap: 3px;
+                margin: 12px 0;
+            }
+            
+            #canvas {
+                max-width: 320px;
+                gap: 12px;
+            }
+            
+            .hand-types {
+                font-size: 12px;
+                margin: 20px 0;
+            }
+            
+            .hand-type-item {
+                margin: 0 5px;
+            }
+            
+            #handInput,
+            .input-overlay {
+                font-size: 22px;
+                min-width: 200px;
             }
         }
         
@@ -571,6 +631,7 @@
         let userIsTyping = false;
         let shouldClearOnNextType = false;
         let definitionTimeout;
+        let firstHandDealt = false;
         
         function getCardValue(card) {
             const spades = ['🂡', '🂢', '🂣', '🂤', '🂥', '🂦', '🂧', '🂨', '🂩', '🂪', '🂫', '🂭', '🂮'];
@@ -1145,6 +1206,9 @@
                     document.querySelector('.controls').classList.add('visible');
                 }, 1000);
                 
+                // Mark that first hand has been dealt
+                firstHandDealt = true;
+                
                 // Animate the reveal on blank canvas
                 setTimeout(() => {
                     animateCardReveal(handsContainer, newHands).then(() => {
@@ -1202,8 +1266,8 @@
                 }
             }
             
-            // Handle arrow key navigation
-            if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+            // Handle arrow key navigation (only after first hand is dealt)
+            if ((e.key === 'ArrowUp' || e.key === 'ArrowDown') && firstHandDealt) {
                 e.preventDefault();
                 
                 // Hide any existing definition immediately
@@ -1325,10 +1389,12 @@
         // Track if hand was changed by hover
         let handChangedByHover = false;
         
-        // Add hover/touch functionality to hand type items
+        // Add hover/touch functionality to hand type items (only after first hand is dealt)
         const handTypeItems = document.querySelectorAll('.hand-type-item');
         handTypeItems.forEach(item => {
             item.addEventListener('mouseenter', () => {
+                if (!firstHandDealt) return; // Prevent hover before first hand is dealt
+                
                 const handType = item.getAttribute('data-hand');
                 displayHands(handType);
                 handInput.value = handType;
@@ -1351,8 +1417,10 @@
                 }
             });
             
-            // Add touch/click support for mobile
+            // Add touch/click support for mobile (only after first hand is dealt)
             item.addEventListener('click', (e) => {
+                if (!firstHandDealt) return; // Prevent click before first hand is dealt
+                
                 e.preventDefault();
                 const handType = item.getAttribute('data-hand');
                 displayHands(handType);
@@ -1381,13 +1449,23 @@
                 }
             });
             
-            // Add touch feedback
-            item.addEventListener('touchstart', () => {
-                item.style.transform = 'scale(0.95)';
+            // Add subtle touch feedback
+            item.addEventListener('touchstart', (e) => {
+                if (window.innerWidth <= 768) {
+                    item.style.color = '#ff0000';
+                    item.style.transition = 'color 0.1s ease';
+                }
             });
             
-            item.addEventListener('touchend', () => {
-                item.style.transform = 'scale(1)';
+            item.addEventListener('touchend', (e) => {
+                if (window.innerWidth <= 768) {
+                    setTimeout(() => {
+                        if (!item.classList.contains('active')) {
+                            item.style.color = '#666';
+                        }
+                        item.style.transition = 'color 0.3s ease';
+                    }, 150);
+                }
             });
         });
 
@@ -1395,8 +1473,12 @@
         const isMobile = () => window.innerWidth <= 768;
         
         document.addEventListener('click', (e) => {
-            // Don't force focus on mobile if clicking hand type items
-            if (isMobile() && e.target.closest('.hand-type-item')) {
+            // Don't force focus on mobile to preserve the minimalist experience
+            if (isMobile()) {
+                // Only focus if user clicks input directly or on empty space
+                if (e.target === handInput || e.target === document.body || e.target.closest('.container')) {
+                    handInput.focus();
+                }
                 return;
             }
             handInput.focus();
