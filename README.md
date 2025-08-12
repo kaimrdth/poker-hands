@@ -19,6 +19,8 @@ Generates and displays poker hands in real-time based on user input.
 - Keyboard navigation with arrow keys
 - Visual card representations using Unicode emojis
 - Support for all standard poker hands plus random generation
+- Hands displayed in order from strongest to weakest (top to bottom)
+- Random mode highlights the winning hand among the 5 generated
 
 ## Usage
 

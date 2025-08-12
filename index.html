@@ -41,6 +41,9 @@
             width: 300px;
             opacity: 0;
             transition: opacity 1.5s ease-in-out;
+            white-space: pre-wrap;
+            line-height: 1.4;
+            min-height: 44px;
         }
         
         .help-message.fade-in {
@@ -139,7 +142,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 145px;
+            font-size: 152px;
             background: rgba(255, 255, 255, 0);
             border: 0px solid #ffffff;
             border-radius: 2px;
@@ -302,6 +305,7 @@
                 top: auto;
                 max-width: 320px;
                 color: #999;
+                min-height: 60px;
             }
             
             .hand-types {
@@ -586,11 +590,29 @@
                 }
                 
                 let i = 0;
-                element.textContent = '';
+                element.innerHTML = ''; // Use innerHTML to properly handle line breaks
+                
+                // Pre-calculate final dimensions by temporarily showing full text
+                const tempSpan = document.createElement('span');
+                tempSpan.style.visibility = 'hidden';
+                tempSpan.style.position = 'absolute';
+                tempSpan.style.whiteSpace = 'pre-wrap';
+                tempSpan.style.fontSize = getComputedStyle(element).fontSize;
+                tempSpan.style.fontFamily = getComputedStyle(element).fontFamily;
+                tempSpan.style.width = getComputedStyle(element).width;
+                tempSpan.textContent = text;
+                document.body.appendChild(tempSpan);
+                
+                const finalHeight = tempSpan.offsetHeight;
+                document.body.removeChild(tempSpan);
+                
+                // Set fixed height to prevent shifting
+                element.style.minHeight = finalHeight + 'px';
                 
                 function typeChar() {
                     if (i < text.length) {
-                        element.textContent += text.charAt(i);
+                        const char = text.charAt(i);
+                        element.textContent += char;
                         i++;
                         currentTypingTimeout = setTimeout(typeChar, speed);
                     } else {
