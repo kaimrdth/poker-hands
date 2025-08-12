@@ -605,10 +605,9 @@
         }
         
         function generatePair(shuffled) {
-            let pairValue = Math.floor(Math.random() * 13) + 1;
-            
-            // Convert 1 to 14 for Ace to match getCardValue conversion
-            if (pairValue === 1) pairValue = 14;
+            // Generate pairs with better distribution to ensure variety in strength
+            const possibleValues = [14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2]; // Ace high to 2 low
+            let pairValue = possibleValues[Math.floor(Math.random() * possibleValues.length)];
             
             const pairCards = cards.filter(card => getCardValue(card) === pairValue);
             const pair = pairCards.slice(0, 2);
