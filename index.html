@@ -135,11 +135,11 @@
         
         .card {
             width: 110px;
-            height: 135px;
+            height: 140px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 140px;
+            font-size: 158px;
             background: rgba(255, 255, 255, 0);
             border: 0px solid #ffffff;
             border-radius: 2px;
@@ -657,7 +657,8 @@
             if (pairs.length === 2) return 2000000 + pairs[0] * 1000 + pairs[1] * 100 + values.filter(v => !pairs.includes(v))[0];
             if (pairs.length === 1) return 1000000 + pairs[0] * 1000 + values.filter(v => v !== pairs[0]).slice(0, 3).reduce((sum, v) => sum + v, 0);
             
-            return values.reduce((sum, v) => sum + v, 0); // High card
+            // High card - use weighted system to prioritize highest cards
+            return values[0] * 10000 + values[1] * 1000 + values[2] * 100 + values[3] * 10 + values[4];
         }
 
         function getHandType(hand) {
