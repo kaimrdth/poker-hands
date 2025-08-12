@@ -9,7 +9,7 @@
         body {
             margin: 0;
             padding: 0px;
-            background: #ffffff;
+            background: #faf9f8;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
         }
         
@@ -126,18 +126,21 @@
         
         .hand.winner {
             background: rgba(34, 197, 94, 0);
-            border: 1px solid rgba(34, 197, 94, 0.4);
+            border: 1px solid rgba(0, 255, 94, 0.753);
             box-shadow: 0 0 0px rgba(34, 197, 94, 0.2);
+            transition: all 0.8s ease;
+            padding-top: 10px;
+            padding-bottom: 30px;
         }
         
         .card {
             width: 110px;
-            height: 162px;
+            height: 135px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 170px;
-            background: white;
+            font-size: 140px;
+            background: rgba(255, 255, 255, 0);
             border: 0px solid #ffffff;
             border-radius: 2px;
             box-shadow: 0 0x 0px rgba(0,0,0,0.1);
@@ -162,14 +165,14 @@
         
         .winner-text {
             position: absolute;
-            right: -100px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: rgba(34, 197, 94, 0.7);
-            font-size: 16px;
+            left: 10px;
+            top: 1%;
+            transform: translateY(50%);
+            color: rgba(30, 211, 96, 0.813);
+            font-size: 12px;
             font-weight: 500;
             opacity: 0;
-            transition: opacity 0.5s ease 0.3s;
+            transition: opacity 1.2s ease;
             white-space: nowrap;
         }
         
@@ -223,7 +226,7 @@
             position: fixed;
             bottom: 30px;
             right: 40px;
-            background: rgba(255, 255, 255, 0.9);
+            background: rgba(255, 255, 255, 0.175);
             border: 1px solid #ffffff;
             border-radius: 5px;
             padding: 15px;
@@ -464,6 +467,30 @@
         const handInput = document.getElementById('handInput');
         const inputOverlay = document.getElementById('inputOverlay');
         
+        // Fisher-Yates shuffle algorithm for proper randomization
+        function shuffle(array) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+        
+        // Deck state for random dealing
+        let remainingDeck = shuffle(cards);
+        
+        function dealRandomCards(count) {
+            // If not enough cards left, reshuffle the deck
+            if (remainingDeck.length < count) {
+                remainingDeck = shuffle(cards);
+            }
+            
+            // Deal the requested number of cards
+            const dealtCards = remainingDeck.splice(0, count);
+            return dealtCards;
+        }
+        
         function updateInputColors(value) {
             const validHandTypes = ['pair', 'two pair', 'three of a kind', 'straight', 'flush', 'full house', 'four of a kind', 'straight flush', 'royal flush', 'random'];
             
@@ -686,7 +713,7 @@
         }
         
         function generatePokerHand(handType) {
-            const shuffled = [...cards].sort(() => 0.5 - Math.random());
+            const shuffled = shuffle(cards);
             
             switch(handType.toLowerCase()) {
                 case 'pair':
@@ -707,6 +734,8 @@
                     return generateStraightFlush();
                 case 'royal flush':
                     return generateRoyalFlush();
+                case 'random':
+                    return dealRandomCards(5);
                 default:
                     return shuffled.slice(0, 5);
             }
@@ -826,7 +855,7 @@
             
             // Keep generating until we get a flush that's not a straight
             do {
-                const shuffledSuit = [...selectedSuit].sort(() => 0.5 - Math.random());
+                const shuffledSuit = shuffle(selectedSuit);
                 hand = shuffledSuit.slice(0, 5);
                 attempts++;
             } while (isHandStraight(hand) && attempts < 50);
@@ -903,19 +932,27 @@
             animationTimeouts = [];
         }
 
+        function clearWinnerHighlights() {
+            const hands = canvas.querySelectorAll('.hand');
+            hands.forEach(hand => {
+                hand.classList.remove('winner');
+                const existingText = hand.querySelector('.winner-text');
+                if (existingText) {
+                    existingText.classList.remove('visible');
+                    // Remove after transition completes
+                    setTimeout(() => {
+                        if (existingText.parentNode) {
+                            existingText.remove();
+                        }
+                    }, 1200);
+                }
+            });
+        }
+
         function highlightWinner(container, winnerIndex, handType) {
             const hands = container.querySelectorAll('.hand');
             if (hands[winnerIndex]) {
-                // Clear any existing winner styles
-                hands.forEach(hand => {
-                    hand.classList.remove('winner');
-                    const existingText = hand.querySelector('.winner-text');
-                    if (existingText) {
-                        existingText.remove();
-                    }
-                });
-                
-                // Add winner highlight with delay
+                // Add winner highlight with smooth delay
                 setTimeout(() => {
                     hands[winnerIndex].classList.add('winner');
                     
@@ -925,11 +962,11 @@
                     winnerText.textContent = `${handType} wins`;
                     hands[winnerIndex].appendChild(winnerText);
                     
-                    // Show winner text after highlight animation
+                    // Show winner text with smooth fade in
                     setTimeout(() => {
                         winnerText.classList.add('visible');
-                    }, 300);
-                }, 1000);
+                    }, 600);
+                }, 1200);
             }
         }
 
@@ -969,8 +1006,9 @@
         }
         
         function displayHands(handType, skipAutoRefresh = false) {
-            // Clear any existing animations and auto-refresh interval
+            // Clear any existing animations, winner highlights, and auto-refresh interval
             clearAnimationTimeouts();
+            clearWinnerHighlights();
             if (autoRefreshInterval && !skipAutoRefresh) {
                 clearInterval(autoRefreshInterval);
                 autoRefreshInterval = null;
@@ -1033,7 +1071,7 @@
             
             // Fallback: if we still don't have 5 hands, generate random hands
             while (newHands.length < 5) {
-                const shuffled = [...cards].sort(() => 0.5 - Math.random());
+                const shuffled = shuffle(cards);
                 newHands.push(shuffled.slice(0, 5));
             }
             
@@ -1118,13 +1156,13 @@
                 }, 50);
             }
             
-            // Start auto-refresh for valid hand types (not for random or during refresh)
-            if (!skipAutoRefresh && handType.toLowerCase() !== 'random') {
+            // Start auto-refresh for valid hand types (including random)
+            if (!skipAutoRefresh) {
                 autoRefreshInterval = setInterval(() => {
                     if (!isRefreshing && currentHandType) {
                         displayHands(currentHandType, true);
                     }
-                }, 12000);
+                }, 25000);
             }
         }
         
@@ -1294,7 +1332,22 @@
                 displayHands(handType);
                 handInput.value = handType;
                 handInput.placeholder = '';
+                updateInputColors(handType);
                 handChangedByHover = true;
+                
+                // Show definition immediately on hover
+                const helpDiv = document.querySelector('.help-message');
+                if (helpDiv) {
+                    // Clear any pending definition timeout
+                    if (definitionTimeout) {
+                        clearTimeout(definitionTimeout);
+                        definitionTimeout = null;
+                    }
+                    
+                    helpDiv.classList.add('fade-in');
+                    const definition = getHandDefinition(handType);
+                    typeMessage(helpDiv, definition, 40);
+                }
             });
             
             // Add touch/click support for mobile
@@ -1304,7 +1357,23 @@
                 displayHands(handType);
                 handInput.value = handType;
                 handInput.placeholder = '';
+                updateInputColors(handType);
                 handChangedByHover = true;
+                
+                // Show definition immediately on click
+                const helpDiv = document.querySelector('.help-message');
+                if (helpDiv) {
+                    // Clear any pending definition timeout
+                    if (definitionTimeout) {
+                        clearTimeout(definitionTimeout);
+                        definitionTimeout = null;
+                    }
+                    
+                    helpDiv.classList.add('fade-in');
+                    const definition = getHandDefinition(handType);
+                    typeMessage(helpDiv, definition, 40);
+                }
+                
                 // Don't focus input on mobile to avoid keyboard popup
                 if (!isMobile()) {
                     handInput.focus();
@@ -1355,7 +1424,7 @@
         initialHelpTimeout = setTimeout(() => {
             if (!helpMessageShown) {
                 helpDiv.classList.add('fade-in');
-                typeMessage(helpDiv, 'Try typing: pair, two pair, three of a kind, straight, flush, full house, four of a kind, straight flush, royal flush, or random', 30);
+                typeMessage(helpDiv, 'start typing: pair, two pair, three of a kind, straight, flush, full house, four of a kind, straight flush, royal flush, or random', 30);
                 helpMessageShown = true;
                 
                 // Fade out help message after it's shown
