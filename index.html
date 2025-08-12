@@ -118,6 +118,16 @@
             flex-direction: row;
             gap: 5px;
             position: relative;
+            transition: all 0.8s ease;
+            border-radius: 15px;
+            padding: 10px;
+            margin: 5px 0;
+        }
+        
+        .hand.winner {
+            background: rgba(34, 197, 94, 0.15);
+            border: 2px solid rgba(34, 197, 94, 0.4);
+            box-shadow: 0 0 20px rgba(34, 197, 94, 0.2);
         }
         
         .card {
@@ -147,6 +157,23 @@
         }
         
         .hand-types.visible {
+            opacity: 1;
+        }
+        
+        .winner-text {
+            position: absolute;
+            right: -200px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(34, 197, 94, 0.7);
+            font-size: 16px;
+            font-weight: 500;
+            opacity: 0;
+            transition: opacity 0.5s ease 0.3s;
+            white-space: nowrap;
+        }
+        
+        .winner-text.visible {
             opacity: 1;
         }
         
@@ -224,6 +251,21 @@
             padding: 2px 6px;
             border-radius: 3px;
             font-size: 11px;
+        }
+        
+        /* Mobile responsive winner text */
+        @media (max-width: 768px) {
+            .winner-text {
+                right: -120px;
+                font-size: 14px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .winner-text {
+                right: -100px;
+                font-size: 12px;
+            }
         }
         
         /* Mobile Responsive Styles */
@@ -590,6 +632,58 @@
             
             return values.reduce((sum, v) => sum + v, 0); // High card
         }
+
+        function getHandType(hand) {
+            const values = hand.map(card => getCardValue(card)).sort((a, b) => b - a);
+            
+            const counts = {};
+            values.forEach(v => counts[v] = (counts[v] || 0) + 1);
+            const pairs = Object.keys(counts).filter(v => counts[v] === 2).length;
+            const trips = Object.keys(counts).filter(v => counts[v] === 3).length;
+            const quads = Object.keys(counts).filter(v => counts[v] === 4).length;
+            
+            // Check for straight
+            const isStraight = () => {
+                const sortedValues = [...values].sort((a, b) => a - b);
+                for (let i = 0; i < sortedValues.length - 1; i++) {
+                    if (sortedValues[i + 1] - sortedValues[i] !== 1) {
+                        if (sortedValues.join(',') === '2,3,4,5,14') return true;
+                        return false;
+                    }
+                }
+                return true;
+            };
+            
+            // Check for flush
+            const isFlush = () => {
+                const suits = hand.map(card => {
+                    if (card >= '🂡' && card <= '🂮') return 'spades';
+                    if (card >= '🃁' && card <= '🃎') return 'hearts';
+                    if (card >= '🃑' && card <= '🃞') return 'diamonds';
+                    if (card >= '🂱' && card <= '🂾') return 'clubs';
+                });
+                return suits.every(suit => suit === suits[0]);
+            };
+            
+            const straight = isStraight();
+            const flush = isFlush();
+            
+            // Determine hand type
+            if (straight && flush) {
+                const sortedValues = [...values].sort((a, b) => a - b);
+                if (sortedValues.join(',') === '10,11,12,13,14') return 'royal flush';
+                return 'straight flush';
+            }
+            if (quads > 0) return 'four of a kind';
+            if (trips > 0 && pairs > 0) return 'full house';
+            if (flush) return 'flush';
+            if (straight) return 'straight';
+            if (trips > 0) return 'three of a kind';
+            if (pairs === 2) return 'two pair';
+            if (pairs === 1) return 'pair';
+            
+            return 'high card';
+        }
         
         function generatePokerHand(handType) {
             const shuffled = [...cards].sort(() => 0.5 - Math.random());
@@ -809,6 +903,36 @@
             animationTimeouts = [];
         }
 
+        function highlightWinner(container, winnerIndex, handType) {
+            const hands = container.querySelectorAll('.hand');
+            if (hands[winnerIndex]) {
+                // Clear any existing winner styles
+                hands.forEach(hand => {
+                    hand.classList.remove('winner');
+                    const existingText = hand.querySelector('.winner-text');
+                    if (existingText) {
+                        existingText.remove();
+                    }
+                });
+                
+                // Add winner highlight with delay
+                setTimeout(() => {
+                    hands[winnerIndex].classList.add('winner');
+                    
+                    // Add winner text
+                    const winnerText = document.createElement('div');
+                    winnerText.className = 'winner-text';
+                    winnerText.textContent = `${handType} wins`;
+                    hands[winnerIndex].appendChild(winnerText);
+                    
+                    // Show winner text after highlight animation
+                    setTimeout(() => {
+                        winnerText.classList.add('visible');
+                    }, 300);
+                }, 1000);
+            }
+        }
+
         async function animateCardReveal(handsContainer, newHands) {
             const hands = handsContainer.querySelectorAll('.hand');
             
@@ -918,6 +1042,21 @@
                 newHands.sort((a, b) => getHandStrength(b) - getHandStrength(a));
             }
             
+            // Find winning hand for random hands
+            let winningHandIndex = -1;
+            let winningHandType = '';
+            if (handType.toLowerCase() === 'random') {
+                let bestStrength = -1;
+                newHands.forEach((hand, index) => {
+                    const strength = getHandStrength(hand);
+                    if (strength > bestStrength) {
+                        bestStrength = strength;
+                        winningHandIndex = index;
+                        winningHandType = getHandType(hand);
+                    }
+                });
+            }
+            
             // Handle existing hands with animation or create new ones
             const existingContainer = canvas.querySelector('.hands-container');
             if (existingContainer && !isRefreshing) {
@@ -926,6 +1065,10 @@
                 // Animate the card reveal
                 animateCardReveal(existingContainer, newHands).then(() => {
                     isRefreshing = false;
+                    // Apply winner highlighting for random hands
+                    if (handType.toLowerCase() === 'random' && winningHandIndex >= 0) {
+                        highlightWinner(existingContainer, winningHandIndex, winningHandType);
+                    }
                 });
             } else if (!isRefreshing) {
                 // Create hands container for first time - start blank
@@ -934,7 +1077,7 @@
                 const handsContainer = document.createElement('div');
                 handsContainer.className = 'hands-container';
                 
-                newHands.forEach(hand => {
+                newHands.forEach((hand, handIndex) => {
                     const handDiv = document.createElement('div');
                     handDiv.className = 'hand';
                     
@@ -967,6 +1110,10 @@
                 setTimeout(() => {
                     animateCardReveal(handsContainer, newHands).then(() => {
                         isRefreshing = false;
+                        // Apply winner highlighting for random hands
+                        if (handType.toLowerCase() === 'random' && winningHandIndex >= 0) {
+                            highlightWinner(handsContainer, winningHandIndex, winningHandType);
+                        }
                     });
                 }, 50);
             }
