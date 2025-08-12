@@ -522,27 +522,59 @@
         function getHandStrength(hand) {
             const values = hand.map(card => getCardValue(card)).sort((a, b) => b - a);
             
-            // For pairs: strength is the pair value
-            // For two pair: strength is higher pair * 100 + lower pair
-            // For three of a kind: strength is the trips value
-            // For straights: strength is the high card
-            // For flushes: strength is sum of all cards
-            // For full house: strength is trips * 100 + pair
-            // For four of a kind: strength is quads value
-            
             const counts = {};
             values.forEach(v => counts[v] = (counts[v] || 0) + 1);
             const pairs = Object.keys(counts).filter(v => counts[v] === 2).map(Number).sort((a, b) => b - a);
             const trips = Object.keys(counts).filter(v => counts[v] === 3).map(Number);
             const quads = Object.keys(counts).filter(v => counts[v] === 4).map(Number);
             
-            if (quads.length > 0) return quads[0] * 1000;
-            if (trips.length > 0 && pairs.length > 0) return trips[0] * 100 + pairs[0];
-            if (trips.length > 0) return trips[0] * 10;
-            if (pairs.length === 2) return pairs[0] * 100 + pairs[1];
-            if (pairs.length === 1) return pairs[0];
+            // Check for straight
+            const isStraight = () => {
+                const sortedValues = [...values].sort((a, b) => a - b);
+                // Check regular straight
+                for (let i = 0; i < sortedValues.length - 1; i++) {
+                    if (sortedValues[i + 1] - sortedValues[i] !== 1) {
+                        // Check for wheel straight (A-2-3-4-5)
+                        if (sortedValues.join(',') === '2,3,4,5,14') return true;
+                        return false;
+                    }
+                }
+                return true;
+            };
             
-            return values[0]; // High card
+            // Check for flush
+            const isFlush = () => {
+                const suits = hand.map(card => {
+                    if (card >= '🂡' && card <= '🂮') return 'spades';
+                    if (card >= '🃁' && card <= '🃎') return 'hearts';
+                    if (card >= '🃑' && card <= '🃞') return 'diamonds';
+                    if (card >= '🂱' && card <= '🂾') return 'clubs';
+                });
+                return suits.every(suit => suit === suits[0]);
+            };
+            
+            const straight = isStraight();
+            const flush = isFlush();
+            
+            // Hand ranking with proper hierarchy
+            if (straight && flush) {
+                // Straight flush - use high card, but handle wheel case
+                const highCard = values.includes(14) && values.includes(2) ? 5 : Math.max(...values);
+                return 8000000 + highCard;
+            }
+            if (quads.length > 0) return 7000000 + quads[0] * 1000 + values.filter(v => v !== quads[0])[0];
+            if (trips.length > 0 && pairs.length > 0) return 6000000 + trips[0] * 1000 + pairs[0];
+            if (flush) return 5000000 + values.reduce((sum, v) => sum + v, 0);
+            if (straight) {
+                // Handle wheel straight (A-2-3-4-5) as 5-high
+                const highCard = values.includes(14) && values.includes(2) ? 5 : Math.max(...values);
+                return 4000000 + highCard;
+            }
+            if (trips.length > 0) return 3000000 + trips[0] * 1000 + values.filter(v => v !== trips[0]).slice(0, 2).reduce((sum, v) => sum + v, 0);
+            if (pairs.length === 2) return 2000000 + pairs[0] * 1000 + pairs[1] * 100 + values.filter(v => !pairs.includes(v))[0];
+            if (pairs.length === 1) return 1000000 + pairs[0] * 1000 + values.filter(v => v !== pairs[0]).slice(0, 3).reduce((sum, v) => sum + v, 0);
+            
+            return values.reduce((sum, v) => sum + v, 0); // High card
         }
         
         function generatePokerHand(handType) {
