@@ -509,11 +509,14 @@
             const diamonds = ['🃑', '🃒', '🃓', '🃔', '🃕', '🃖', '🃗', '🃘', '🃙', '🃚', '🃛', '🃝', '🃞'];
             const clubs = ['🂱', '🂲', '🂳', '🂴', '🂵', '🂶', '🂷', '🂸', '🂹', '🂺', '🂻', '🂽', '🂾'];
             
-            if (spades.includes(card)) return spades.indexOf(card) + 1;
-            if (hearts.includes(card)) return hearts.indexOf(card) + 1;
-            if (diamonds.includes(card)) return diamonds.indexOf(card) + 1;
-            if (clubs.includes(card)) return clubs.indexOf(card) + 1;
-            return 0;
+            let value = 0;
+            if (spades.includes(card)) value = spades.indexOf(card) + 1;
+            else if (hearts.includes(card)) value = hearts.indexOf(card) + 1;
+            else if (diamonds.includes(card)) value = diamonds.indexOf(card) + 1;
+            else if (clubs.includes(card)) value = clubs.indexOf(card) + 1;
+            
+            // Convert Ace from 1 to 14 (highest value)
+            return value === 1 ? 14 : value;
         }
         
         function getHandStrength(hand) {
@@ -597,7 +600,7 @@
         
         function generateStraight() {
             const straights = [
-                [1, 2, 3, 4, 5], // A-2-3-4-5 (wheel)
+                [14, 2, 3, 4, 5], // A-2-3-4-5 (wheel - Ace low)
                 [2, 3, 4, 5, 6],
                 [3, 4, 5, 6, 7],
                 [4, 5, 6, 7, 8],
@@ -606,7 +609,7 @@
                 [7, 8, 9, 10, 11],
                 [8, 9, 10, 11, 12],
                 [9, 10, 11, 12, 13],
-                [10, 11, 12, 13, 1] // 10-J-Q-K-A
+                [10, 11, 12, 13, 14] // 10-J-Q-K-A (Ace high)
             ];
             const straightValues = straights[Math.floor(Math.random() * straights.length)];
             return straightValues.map(value => {
@@ -654,7 +657,7 @@
             const selectedSuit = suits[Math.floor(Math.random() * 4)];
             
             const straights = [
-                [0, 1, 2, 3, 4],     // A-2-3-4-5 (indices in suit)
+                [0, 1, 2, 3, 4],     // A-2-3-4-5 (wheel - indices in suit)
                 [1, 2, 3, 4, 5],
                 [2, 3, 4, 5, 6],
                 [3, 4, 5, 6, 7],
@@ -662,7 +665,8 @@
                 [5, 6, 7, 8, 9],
                 [6, 7, 8, 9, 10],
                 [7, 8, 9, 10, 11],
-                [8, 9, 10, 11, 12]   // 9-10-J-Q-K
+                [8, 9, 10, 11, 12],  // 9-10-J-Q-K
+                [9, 10, 11, 12, 0]   // 10-J-Q-K-A (Ace high)
             ];
             const straightIndices = straights[Math.floor(Math.random() * straights.length)];
             return straightIndices.map(index => selectedSuit[index]);
