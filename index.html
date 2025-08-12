@@ -605,28 +605,52 @@
         }
         
         function generatePair(shuffled) {
-            const pairValue = Math.floor(Math.random() * 13) + 1;
+            let pairValue = Math.floor(Math.random() * 13) + 1;
+            
+            // Convert 1 to 14 for Ace to match getCardValue conversion
+            if (pairValue === 1) pairValue = 14;
+            
             const pairCards = cards.filter(card => getCardValue(card) === pairValue);
             const pair = pairCards.slice(0, 2);
             const others = shuffled.filter(card => getCardValue(card) !== pairValue).slice(0, 3);
+            
+            // Sort kickers by value (highest first)
+            others.sort((a, b) => getCardValue(b) - getCardValue(a));
             return [...pair, ...others];
         }
         
         function generateTwoPair(shuffled) {
-            const value1 = Math.floor(Math.random() * 13) + 1;
+            let value1 = Math.floor(Math.random() * 13) + 1;
             let value2 = Math.floor(Math.random() * 12) + 1;
             if (value2 >= value1) value2++;
+            
+            // Convert 1 to 14 for Ace to match getCardValue conversion
+            if (value1 === 1) value1 = 14;
+            if (value2 === 1) value2 = 14;
             
             const pair1 = cards.filter(card => getCardValue(card) === value1).slice(0, 2);
             const pair2 = cards.filter(card => getCardValue(card) === value2).slice(0, 2);
             const kicker = shuffled.filter(card => getCardValue(card) !== value1 && getCardValue(card) !== value2)[0];
-            return [...pair1, ...pair2, kicker];
+            
+            // Order pairs by value (higher pair first)
+            if (value1 > value2) {
+                return [...pair1, ...pair2, kicker];
+            } else {
+                return [...pair2, ...pair1, kicker];
+            }
         }
         
         function generateThreeOfAKind(shuffled) {
-            const tripValue = Math.floor(Math.random() * 13) + 1;
+            let tripValue = Math.floor(Math.random() * 13) + 1;
+            
+            // Convert 1 to 14 for Ace to match getCardValue conversion
+            if (tripValue === 1) tripValue = 14;
+            
             const trips = cards.filter(card => getCardValue(card) === tripValue).slice(0, 3);
             const others = shuffled.filter(card => getCardValue(card) !== tripValue).slice(0, 2);
+            
+            // Sort kickers by value (highest first)
+            others.sort((a, b) => getCardValue(b) - getCardValue(a));
             return [...trips, ...others];
         }
         
@@ -663,9 +687,13 @@
         }
         
         function generateFullHouse(shuffled) {
-            const tripValue = Math.floor(Math.random() * 13) + 1;
+            let tripValue = Math.floor(Math.random() * 13) + 1;
             let pairValue = Math.floor(Math.random() * 12) + 1;
             if (pairValue >= tripValue) pairValue++;
+            
+            // Convert 1 to 14 for Ace to match getCardValue conversion
+            if (tripValue === 1) tripValue = 14;
+            if (pairValue === 1) pairValue = 14;
             
             const trips = cards.filter(card => getCardValue(card) === tripValue).slice(0, 3);
             const pair = cards.filter(card => getCardValue(card) === pairValue).slice(0, 2);
@@ -673,7 +701,11 @@
         }
         
         function generateFourOfAKind(shuffled) {
-            const quadValue = Math.floor(Math.random() * 13) + 1;
+            let quadValue = Math.floor(Math.random() * 13) + 1;
+            
+            // Convert 1 to 14 for Ace to match getCardValue conversion
+            if (quadValue === 1) quadValue = 14;
+            
             const quads = cards.filter(card => getCardValue(card) === quadValue);
             const kicker = shuffled.filter(card => getCardValue(card) !== quadValue)[0];
             return [...quads, kicker];
@@ -810,13 +842,21 @@
             
             // Generate new hands
             const newHands = [];
-            for (let i = 0; i < 5; i++) {
+            let attempts = 0;
+            while (newHands.length < 5 && attempts < 50) {
                 const hand = generatePokerHand(handType);
-                if (!hand || hand.length !== 5) {
+                if (hand && hand.length === 5) {
+                    newHands.push(hand);
+                } else {
                     console.error('Invalid hand generated:', hand);
-                    continue;
                 }
-                newHands.push(hand);
+                attempts++;
+            }
+            
+            // Fallback: if we still don't have 5 hands, generate random hands
+            while (newHands.length < 5) {
+                const shuffled = [...cards].sort(() => 0.5 - Math.random());
+                newHands.push(shuffled.slice(0, 5));
             }
             
             // Sort hands by strength (strongest first for visual hierarchy)
