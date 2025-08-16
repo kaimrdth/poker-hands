@@ -1073,14 +1073,14 @@
                             const newCard = newHands[handIndex][cardIndex];
                             cards[cardIndex].textContent = newCard;
                             
-                            // Color spades and clubs black, hearts and diamonds red
-                            // Check suit using Unicode ranges (more reliable than array lookups)
-                            if ((newCard >= '🂡' && newCard <= '🂮') || // spades
-                                (newCard >= '🂱' && newCard <= '🂾')) { // clubs
-                                cards[cardIndex].style.color = '#000000'; // spades and clubs black
-                            } else if ((newCard >= '🃁' && newCard <= '🃎') || // hearts
-                                       (newCard >= '🃑' && newCard <= '🃞')) { // diamonds
-                                cards[cardIndex].style.color = '#ff0000'; // hearts and diamonds red
+                            // Color cards using Unicode ranges: U+1F0A*/U+1F0D* = Black, U+1F0B*/U+1F0C* = Red
+                            const codePoint = newCard.codePointAt(0);
+                            if ((codePoint >= 0x1F0A1 && codePoint <= 0x1F0AE) || // spades (U+1F0A*)
+                                (codePoint >= 0x1F0D1 && codePoint <= 0x1F0DE)) { // clubs (U+1F0D*)
+                                cards[cardIndex].style.color = '#000000'; // black
+                            } else if ((codePoint >= 0x1F0B1 && codePoint <= 0x1F0BE) || // hearts (U+1F0B*)
+                                       (codePoint >= 0x1F0C1 && codePoint <= 0x1F0CE)) { // diamonds (U+1F0C*)
+                                cards[cardIndex].style.color = '#ff0000'; // red
                             }
                             
                             resolve();
