@@ -1074,9 +1074,14 @@
                             cards[cardIndex].textContent = newCard;
                             
                             // Color spades and clubs black, hearts and diamonds red
-                            if ((newCard >= '🂡' && newCard <= '🂮') || (newCard >= '🂱' && newCard <= '🂾')) {
+                            const isSpades = cards.slice(0, 13).includes(newCard);
+                            const isHearts = cards.slice(13, 26).includes(newCard);
+                            const isDiamonds = cards.slice(26, 39).includes(newCard);
+                            const isClubs = cards.slice(39, 52).includes(newCard);
+                            
+                            if (isSpades || isClubs) {
                                 cards[cardIndex].style.color = '#000000'; // spades and clubs black
-                            } else if ((newCard >= '🃁' && newCard <= '🃎') || (newCard >= '🃑' && newCard <= '🃞')) {
+                            } else if (isHearts || isDiamonds) {
                                 cards[cardIndex].style.color = '#ff0000'; // hearts and diamonds red
                             }
                             
