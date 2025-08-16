@@ -1074,21 +1074,12 @@
                             cards[cardIndex].textContent = newCard;
                             
                             // Color spades and clubs black, hearts and diamonds red
-                            // Check which suit the card belongs to using the global cards array
-                            const globalCards = [
-                                '🂡', '🂢', '🂣', '🂤', '🂥', '🂦', '🂧', '🂨', '🂩', '🂪', '🂫', '🂭', '🂮', // spades
-                                '🃁', '🃂', '🃃', '🃄', '🃅', '🃆', '🃇', '🃈', '🃉', '🃊', '🃋', '🃍', '🃎', // hearts
-                                '🃑', '🃒', '🃓', '🃔', '🃕', '🃖', '🃗', '🃘', '🃙', '🃚', '🃛', '🃝', '🃞', // diamonds
-                                '🂱', '🂲', '🂳', '🂴', '🂵', '🂶', '🂷', '🂸', '🂹', '🂺', '🂻', '🂼', '🂽', '🂾'  // clubs
-                            ];
-                            const isSpades = globalCards.slice(0, 13).includes(newCard);
-                            const isHearts = globalCards.slice(13, 26).includes(newCard);
-                            const isDiamonds = globalCards.slice(26, 39).includes(newCard);
-                            const isClubs = globalCards.slice(39, 52).includes(newCard);
-                            
-                            if (isSpades || isClubs) {
+                            // Check suit using Unicode ranges (more reliable than array lookups)
+                            if ((newCard >= '🂡' && newCard <= '🂮') || // spades
+                                (newCard >= '🂱' && newCard <= '🂾')) { // clubs
                                 cards[cardIndex].style.color = '#000000'; // spades and clubs black
-                            } else if (isHearts || isDiamonds) {
+                            } else if ((newCard >= '🃁' && newCard <= '🃎') || // hearts
+                                       (newCard >= '🃑' && newCard <= '🃞')) { // diamonds
                                 cards[cardIndex].style.color = '#ff0000'; // hearts and diamonds red
                             }
                             
