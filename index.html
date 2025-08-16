@@ -1074,10 +1074,17 @@
                             cards[cardIndex].textContent = newCard;
                             
                             // Color spades and clubs black, hearts and diamonds red
-                            const isSpades = cards.slice(0, 13).includes(newCard);
-                            const isHearts = cards.slice(13, 26).includes(newCard);
-                            const isDiamonds = cards.slice(26, 39).includes(newCard);
-                            const isClubs = cards.slice(39, 52).includes(newCard);
+                            // Check which suit the card belongs to using the global cards array
+                            const globalCards = [
+                                '🂡', '🂢', '🂣', '🂤', '🂥', '🂦', '🂧', '🂨', '🂩', '🂪', '🂫', '🂭', '🂮', // spades
+                                '🃁', '🃂', '🃃', '🃄', '🃅', '🃆', '🃇', '🃈', '🃉', '🃊', '🃋', '🃍', '🃎', // hearts
+                                '🃑', '🃒', '🃓', '🃔', '🃕', '🃖', '🃗', '🃘', '🃙', '🃚', '🃛', '🃝', '🃞', // diamonds
+                                '🂱', '🂲', '🂳', '🂴', '🂵', '🂶', '🂷', '🂸', '🂹', '🂺', '🂻', '🂼', '🂽', '🂾'  // clubs
+                            ];
+                            const isSpades = globalCards.slice(0, 13).includes(newCard);
+                            const isHearts = globalCards.slice(13, 26).includes(newCard);
+                            const isDiamonds = globalCards.slice(26, 39).includes(newCard);
+                            const isClubs = globalCards.slice(39, 52).includes(newCard);
                             
                             if (isSpades || isClubs) {
                                 cards[cardIndex].style.color = '#000000'; // spades and clubs black
