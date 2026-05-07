@@ -794,7 +794,6 @@
             <div class="hand-type-item" data-hand="three of a kind">three of a kind</div>
             <div class="hand-type-item" data-hand="two pair">two pair</div>
             <div class="hand-type-item" data-hand="pair">pair</div>
-            <div class="hand-type-item" data-hand="random">random</div>
         </div>
 
         <div class="controls">
@@ -888,7 +887,7 @@
                         const helpDiv = document.querySelector('.help-message');
                         if (helpDiv) {
                             helpDiv.classList.add('fade-in');
-                            typeMessage(helpDiv, 'start typing: pair, two pair, three of a kind, straight, flush, full house, four of a kind, straight flush, royal flush, or random', 30);
+                            typeMessage(helpDiv, 'start typing: pair, two pair, three of a kind, straight, flush, full house, four of a kind, straight flush, or royal flush', 30);
                             helpMessageShown = true;
                             setTimeout(() => { helpDiv.classList.remove('fade-in'); }, 6000);
                         }
@@ -961,7 +960,7 @@
             }
 
             // Normal coloring based on validation
-            if (validHandTypes.includes(value.toLowerCase()) || value.toLowerCase() === 'random') {
+            if (validHandTypes.includes(value.toLowerCase())) {
                 inputOverlay.innerHTML = '<span class="validated-part">' + value.toLowerCase() + '</span>';
             } else {
                 inputOverlay.innerHTML = value;
@@ -1037,7 +1036,7 @@
         let animationTimeouts = [];
         
         // Hand type navigation
-        const handTypes = ['royal flush', 'straight flush', 'four of a kind', 'full house', 'flush', 'straight', 'three of a kind', 'two pair', 'pair', 'random'];
+        const handTypes = ['royal flush', 'straight flush', 'four of a kind', 'full house', 'flush', 'straight', 'three of a kind', 'two pair', 'pair'];
         let currentHandIndex = -1;
         let userIsTyping = false;
         let shouldClearOnNextType = false;
@@ -1757,7 +1756,7 @@
             
             if (value) {
                 const validHandTypes = ['pair', 'two pair', 'three of a kind', 'straight', 'flush', 'full house', 'four of a kind', 'straight flush', 'royal flush'];
-                if (validHandTypes.includes(value.toLowerCase()) || value.toLowerCase() === 'random') {
+                if (validHandTypes.includes(value.toLowerCase())) {
                     // Cancel initial help message if user types valid hand before it appears
                     if (initialHelpTimeout) {
                         clearTimeout(initialHelpTimeout);
