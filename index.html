@@ -481,6 +481,194 @@
             }
         }
         
+        /* Hold'em mode item */
+        .hand-type-item.holdem-item {
+            color: rgb(6, 174, 67);
+            font-weight: 500;
+        }
+        .hand-type-item.holdem-item:hover,
+        .hand-type-item.holdem-item.active {
+            color: rgb(4, 140, 54);
+        }
+
+        /* Hold'em game styles */
+        .holdem-game {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            width: 100%;
+        }
+        .holdem-opponents {
+            display: flex;
+            gap: 40px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .holdem-player-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            transition: opacity 0.8s ease;
+        }
+        .holdem-player-area.folded { opacity: 0.25; }
+        .holdem-player-area.active-turn { position: relative; }
+        .holdem-player-area.active-turn::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 6px;
+            background: #333;
+            border-radius: 50%;
+        }
+        .holdem-player-info { font-size: 13px; color: #666; text-align: center; }
+        .holdem-player-name { font-weight: 500; color: #333; }
+        .holdem-player-chips { font-size: 12px; color: #999; margin-top: 2px; }
+        .holdem-player-bet { font-size: 11px; color: #cc7700; min-height: 16px; margin-top: 2px; }
+        .holdem-cards-row { display: flex; gap: 4px; }
+        .holdem-card {
+            width: 70px;
+            height: 96px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 105px;
+        }
+        .holdem-community-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .holdem-community-cards { display: flex; gap: 6px; }
+        .holdem-community-card {
+            width: 80px;
+            height: 110px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 120px;
+            border-radius: 4px;
+            border: 1px solid #eee;
+            background: #fff;
+        }
+        .holdem-community-card.empty {
+            border: 1px dashed #ddd;
+            background: transparent;
+        }
+        .holdem-pot { font-size: 14px; color: #666; margin-top: 8px; }
+        .holdem-pot-amount { font-weight: 500; color: #333; }
+        .holdem-phase-label {
+            font-size: 11px;
+            color: #bbb;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            min-height: 16px;
+        }
+        .holdem-hero { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+        .holdem-hero.folded { opacity: 0.25; }
+        .holdem-hero-cards { display: flex; gap: 6px; }
+        .holdem-hero-card {
+            width: 90px;
+            height: 124px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 135px;
+        }
+        .holdem-actions { display: flex; gap: 12px; margin-top: 10px; min-height: 42px; }
+        .holdem-btn {
+            padding: 8px 20px;
+            border: 1px solid #ddd;
+            background: #fff;
+            border-radius: 4px;
+            font-size: 13px;
+            font-family: inherit;
+            color: #333;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .holdem-btn:hover { border-color: #333; }
+        .holdem-btn:disabled { opacity: 0.3; cursor: default; border-color: #eee; }
+        .holdem-btn.fold:hover { border-color: #cc3333; color: #cc3333; }
+        .holdem-btn.raise:hover { border-color: #2d8a4e; color: #2d8a4e; }
+        .holdem-timer-bar {
+            width: 100%;
+            max-width: 200px;
+            height: 2px;
+            background: #eee;
+            border-radius: 1px;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+        .holdem-timer-fill {
+            height: 100%;
+            background: #333;
+            border-radius: 1px;
+            transition: width 0.1s linear;
+        }
+        .holdem-timer-fill.urgent { background: #cc3333; }
+        .holdem-winner-banner {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255,255,255,0.97);
+            border: 1.5px solid rgba(6, 174, 67, 0.8);
+            border-radius: 12px;
+            padding: 24px 40px;
+            font-size: 15px;
+            color: #333;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.8s ease;
+            pointer-events: none;
+            z-index: 100;
+        }
+        .holdem-winner-banner.visible { opacity: 1; }
+        .holdem-dealer-chip {
+            font-size: 10px;
+            background: #333;
+            color: #fff;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+        .holdem-exit {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            font-size: 13px;
+            color: #999;
+            cursor: pointer;
+            transition: color 0.3s ease;
+            z-index: 50;
+        }
+        .holdem-exit:hover { color: #333; }
+
+        @media (max-width: 768px) {
+            .holdem-card { width: 55px; height: 76px; font-size: 82px; }
+            .holdem-community-card { width: 62px; height: 86px; font-size: 95px; }
+            .holdem-hero-card { width: 70px; height: 96px; font-size: 105px; }
+            .holdem-opponents { gap: 20px; }
+            .holdem-actions { gap: 8px; }
+            .holdem-btn { padding: 8px 14px; font-size: 12px; }
+        }
+        @media (max-width: 480px) {
+            .holdem-card { width: 45px; height: 62px; font-size: 68px; }
+            .holdem-community-card { width: 52px; height: 72px; font-size: 80px; }
+            .holdem-hero-card { width: 58px; height: 80px; font-size: 88px; }
+            .holdem-community-cards { gap: 4px; }
+        }
     </style>
 </head>
 <body>
@@ -503,6 +691,7 @@
             <div class="hand-type-item" data-hand="two pair">two pair</div>
             <div class="hand-type-item" data-hand="pair">pair</div>
             <div class="hand-type-item" data-hand="random">random</div>
+            <div class="hand-type-item holdem-item" data-hand="hold'em">hold'em</div>
         </div>
         
         <div class="controls">
@@ -557,10 +746,10 @@
         
         function updateInputColors(value) {
             const validHandTypes = ['pair', 'two pair', 'three of a kind', 'straight', 'flush', 'full house', 'four of a kind', 'straight flush', 'royal flush', 'random'];
-            
+
             // Always use overlay - input is always transparent
             inputOverlay.style.display = 'block';
-            
+
             // Check for straight flush edge case
             if (value.startsWith('straight ') && !validHandTypes.includes(value.toLowerCase())) {
                 const flushPart = value.substring(9); // Everything after "straight "
@@ -570,7 +759,13 @@
                     return;
                 }
             }
-            
+
+            // Hold'em gets green coloring
+            if (value.toLowerCase() === "hold'em") {
+                inputOverlay.innerHTML = '<span style="color:rgb(6,174,67);font-weight:500">' + value.toLowerCase() + '</span>';
+                return;
+            }
+
             // Normal coloring based on validation
             if (validHandTypes.includes(value.toLowerCase()) || value.toLowerCase() === 'random') {
                 inputOverlay.innerHTML = '<span class="validated-part">' + value.toLowerCase() + '</span>';
@@ -635,7 +830,8 @@
                 'four of a kind': 'four cards of the same rank',
                 'straight flush': 'straight and flush combined',
                 'royal flush': 'A-K-Q-J-10 all same suit',
-                'random': 'random five cards'
+                'random': 'random five cards',
+                "hold'em": 'texas hold\'em vs AI'
             };
             return definitions[handType.toLowerCase()] || '';
         }
@@ -648,7 +844,7 @@
         let animationTimeouts = [];
         
         // Hand type navigation
-        const handTypes = ['royal flush', 'straight flush', 'four of a kind', 'full house', 'flush', 'straight', 'three of a kind', 'two pair', 'pair', 'random'];
+        const handTypes = ['royal flush', 'straight flush', 'four of a kind', 'full house', 'flush', 'straight', 'three of a kind', 'two pair', 'pair', 'random', "hold'em"];
         let currentHandIndex = -1;
         let userIsTyping = false;
         let shouldClearOnNextType = false;
@@ -1118,6 +1314,12 @@
                 });
             }
             
+            // Hold'em mode - switch to game
+            if (handType.toLowerCase() === "hold'em") {
+                enterHoldemMode();
+                return;
+            }
+
             // Validate hand type
             const validHandTypes = ['pair', 'two pair', 'three of a kind', 'straight', 'flush', 'full house', 'four of a kind', 'straight flush', 'royal flush'];
             if (!validHandTypes.includes(handType.toLowerCase()) && handType.toLowerCase() !== 'random') {
@@ -1368,7 +1570,7 @@
             
             if (value) {
                 const validHandTypes = ['pair', 'two pair', 'three of a kind', 'straight', 'flush', 'full house', 'four of a kind', 'straight flush', 'royal flush'];
-                if (validHandTypes.includes(value.toLowerCase()) || value.toLowerCase() === 'random') {
+                if (validHandTypes.includes(value.toLowerCase()) || value.toLowerCase() === 'random' || value.toLowerCase() === "hold'em") {
                     // Cancel initial help message if user types valid hand before it appears
                     if (initialHelpTimeout) {
                         clearTimeout(initialHelpTimeout);
@@ -1477,7 +1679,8 @@
             // Add subtle touch feedback
             item.addEventListener('touchstart', (e) => {
                 if (window.innerWidth <= 768) {
-                    item.style.color = '#ff0000';
+                    const isHoldem = item.classList.contains('holdem-item');
+                    item.style.color = isHoldem ? 'rgb(4, 140, 54)' : '#ff0000';
                     item.style.transition = 'color 0.1s ease';
                 }
             });
@@ -1486,7 +1689,8 @@
                 if (window.innerWidth <= 768) {
                     setTimeout(() => {
                         if (!item.classList.contains('active')) {
-                            item.style.color = '#666';
+                            const isHoldem = item.classList.contains('holdem-item');
+                            item.style.color = isHoldem ? 'rgb(6, 174, 67)' : '#666';
                         }
                         item.style.transition = 'color 0.3s ease';
                     }, 150);
@@ -1541,6 +1745,617 @@
                 }, 6000);
             }
         }, 2000);
+        // ============== HOLD'EM GAME ==============
+        let holdemActive = false;
+        let holdemGame = {
+            phase: 'idle',
+            deck: [],
+            communityCards: [],
+            pot: 0,
+            currentBet: 0,
+            dealerIndex: 0,
+            activePlayerIndex: 0,
+            players: [],
+            waitingForPlayer: false,
+            handInProgress: false
+        };
+        const HE_SMALL_BLIND = 10;
+        const HE_BIG_BLIND = 20;
+        const HE_STARTING_CHIPS = 1000;
+        const HE_TURN_TIME = 15000;
+        let hePlayerResolve = null;
+        let heTimerInterval = null;
+        let heTimerStart = 0;
+
+        function enterHoldemMode() {
+            holdemActive = true;
+            // Hide visualizer UI
+            document.querySelector('.input-section').style.display = 'none';
+            document.querySelector('.hand-types').style.display = 'none';
+            document.querySelector('.controls').style.display = 'none';
+            const helpMsg = document.querySelector('.help-message');
+            if (helpMsg) helpMsg.style.display = 'none';
+            // Stop auto-refresh
+            if (autoRefreshInterval) { clearInterval(autoRefreshInterval); autoRefreshInterval = null; }
+            clearAnimationTimeouts();
+            // Show exit button
+            let exitBtn = document.querySelector('.holdem-exit');
+            if (!exitBtn) {
+                exitBtn = document.createElement('div');
+                exitBtn.className = 'holdem-exit';
+                exitBtn.textContent = '\u2190 back';
+                exitBtn.onclick = exitHoldemMode;
+                document.body.appendChild(exitBtn);
+            }
+            exitBtn.style.display = 'block';
+            // Start game
+            holdemGame.players = heCreatePlayers();
+            holdemGame.dealerIndex = 0;
+            heStartNewHand();
+        }
+
+        function exitHoldemMode() {
+            holdemActive = false;
+            // Clean up game state
+            if (heTimerInterval) { clearInterval(heTimerInterval); heTimerInterval = null; }
+            hePlayerResolve = null;
+            holdemGame.handInProgress = false;
+            holdemGame.phase = 'idle';
+            // Hide exit button and banner
+            const exitBtn = document.querySelector('.holdem-exit');
+            if (exitBtn) exitBtn.style.display = 'none';
+            const banner = document.querySelector('.holdem-winner-banner');
+            if (banner) banner.remove();
+            // Restore visualizer UI
+            document.querySelector('.input-section').style.display = '';
+            document.querySelector('.hand-types').style.display = '';
+            document.querySelector('.controls').style.display = '';
+            const helpMsg = document.querySelector('.help-message');
+            if (helpMsg) helpMsg.style.display = '';
+            canvas.innerHTML = '';
+            handInput.value = '';
+            inputOverlay.innerHTML = '';
+            currentHandType = null;
+            handInput.focus();
+        }
+
+        function heCreatePlayers() {
+            return [
+                { name: 'You', chips: HE_STARTING_CHIPS, holeCards: [], currentBet: 0, folded: false, isAI: false, allIn: false },
+                { name: 'Alice', chips: HE_STARTING_CHIPS, holeCards: [], currentBet: 0, folded: false, isAI: true, allIn: false },
+                { name: 'Bob', chips: HE_STARTING_CHIPS, holeCards: [], currentBet: 0, folded: false, isAI: true, allIn: false }
+            ];
+        }
+
+        function heGetCardSuit(card) {
+            const codePoint = card.codePointAt(0);
+            if (codePoint >= 0x1F0A1 && codePoint <= 0x1F0AE) return 'spades';
+            if (codePoint >= 0x1F0B1 && codePoint <= 0x1F0BE) return 'hearts';
+            if (codePoint >= 0x1F0C1 && codePoint <= 0x1F0CE) return 'diamonds';
+            if (codePoint >= 0x1F0D1 && codePoint <= 0x1F0DE) return 'clubs';
+            return null;
+        }
+
+        function heGetCardColor(card) {
+            const s = heGetCardSuit(card);
+            return (s === 'hearts' || s === 'diamonds') ? '#ff0000' : '#000000';
+        }
+
+        function heGetCardValue(card) {
+            const codePoint = card.codePointAt(0);
+            let suitOffset;
+            if (codePoint >= 0x1F0A1 && codePoint <= 0x1F0AE) suitOffset = 0x1F0A0;
+            else if (codePoint >= 0x1F0B1 && codePoint <= 0x1F0BE) suitOffset = 0x1F0B0;
+            else if (codePoint >= 0x1F0C1 && codePoint <= 0x1F0CE) suitOffset = 0x1F0C0;
+            else if (codePoint >= 0x1F0D1 && codePoint <= 0x1F0DE) suitOffset = 0x1F0D0;
+            else return 0;
+            let rank = codePoint - suitOffset;
+            if (rank >= 13) rank--;
+            return rank === 1 ? 14 : rank;
+        }
+
+        function heGetHandStrength(hand) {
+            const values = hand.map(c => heGetCardValue(c)).sort((a, b) => b - a);
+            const counts = {};
+            values.forEach(v => counts[v] = (counts[v] || 0) + 1);
+            const pairs = Object.keys(counts).filter(v => counts[v] === 2).map(Number).sort((a, b) => b - a);
+            const trips = Object.keys(counts).filter(v => counts[v] === 3).map(Number);
+            const quads = Object.keys(counts).filter(v => counts[v] === 4).map(Number);
+            const isStraight = () => {
+                const sorted = [...values].sort((a, b) => a - b);
+                for (let i = 0; i < sorted.length - 1; i++) {
+                    if (sorted[i + 1] - sorted[i] !== 1) {
+                        if (sorted.join(',') === '2,3,4,5,14') return true;
+                        return false;
+                    }
+                }
+                return true;
+            };
+            const isFlush = () => {
+                const suits = hand.map(c => heGetCardSuit(c));
+                return suits.every(s => s === suits[0]);
+            };
+            const straight = isStraight();
+            const flush = isFlush();
+            if (straight && flush) return 8000000 + (values.includes(14) && values.includes(2) ? 5 : Math.max(...values));
+            if (quads.length > 0) return 7000000 + quads[0] * 100 + values.filter(v => v !== quads[0])[0];
+            if (trips.length > 0 && pairs.length > 0) return 6000000 + trips[0] * 100 + pairs[0];
+            if (flush) return 5000000 + values[0] * 10000 + values[1] * 1000 + values[2] * 100 + values[3] * 10 + values[4];
+            if (straight) return 4000000 + (values.includes(14) && values.includes(2) ? 5 : Math.max(...values));
+            if (trips.length > 0) return 3000000 + trips[0] * 10000 + values.filter(v => v !== trips[0]).sort((a,b) => b-a)[0] * 100 + values.filter(v => v !== trips[0]).sort((a,b) => b-a)[1];
+            if (pairs.length === 2) return 2000000 + pairs[0] * 10000 + pairs[1] * 100 + values.filter(v => !pairs.includes(v))[0];
+            if (pairs.length === 1) return 1000000 + pairs[0] * 10000 + values.filter(v => v !== pairs[0]).sort((a,b) => b-a)[0] * 100 + values.filter(v => v !== pairs[0]).sort((a,b) => b-a)[1] * 10 + values.filter(v => v !== pairs[0]).sort((a,b) => b-a)[2];
+            return values[0] * 10000 + values[1] * 1000 + values[2] * 100 + values[3] * 10 + values[4];
+        }
+
+        function heGetHandType(hand) {
+            const values = hand.map(c => heGetCardValue(c)).sort((a, b) => b - a);
+            const counts = {};
+            values.forEach(v => counts[v] = (counts[v] || 0) + 1);
+            const pairCount = Object.keys(counts).filter(v => counts[v] === 2).length;
+            const tripCount = Object.keys(counts).filter(v => counts[v] === 3).length;
+            const quadCount = Object.keys(counts).filter(v => counts[v] === 4).length;
+            const isStraight = () => {
+                const sorted = [...values].sort((a, b) => a - b);
+                for (let i = 0; i < sorted.length - 1; i++) {
+                    if (sorted[i + 1] - sorted[i] !== 1) {
+                        if (sorted.join(',') === '2,3,4,5,14') return true;
+                        return false;
+                    }
+                }
+                return true;
+            };
+            const isFlush = () => {
+                const suits = hand.map(c => heGetCardSuit(c));
+                return suits.every(s => s === suits[0]);
+            };
+            const straight = isStraight();
+            const flush = isFlush();
+            if (straight && flush) {
+                const sorted = [...values].sort((a, b) => a - b);
+                if (sorted.join(',') === '10,11,12,13,14') return 'royal flush';
+                return 'straight flush';
+            }
+            if (quadCount > 0) return 'four of a kind';
+            if (tripCount > 0 && pairCount > 0) return 'full house';
+            if (flush) return 'flush';
+            if (straight) return 'straight';
+            if (tripCount > 0) return 'three of a kind';
+            if (pairCount === 2) return 'two pair';
+            if (pairCount === 1) return 'pair';
+            return 'high card';
+        }
+
+        function heGetCombinations(arr, k) {
+            const results = [];
+            function combine(start, combo) {
+                if (combo.length === k) { results.push([...combo]); return; }
+                for (let i = start; i < arr.length; i++) {
+                    combo.push(arr[i]);
+                    combine(i + 1, combo);
+                    combo.pop();
+                }
+            }
+            combine(0, []);
+            return results;
+        }
+
+        function heBestFiveFromSeven(sevenCards) {
+            const combos = heGetCombinations(sevenCards, 5);
+            let bestHand = null, bestStrength = -1;
+            for (const hand of combos) {
+                const strength = heGetHandStrength(hand);
+                if (strength > bestStrength) { bestStrength = strength; bestHand = hand; }
+            }
+            return { hand: bestHand, strength: bestStrength, type: heGetHandType(bestHand) };
+        }
+
+        // AI
+        function hePreflopStrength(holeCards) {
+            const v1 = heGetCardValue(holeCards[0]), v2 = heGetCardValue(holeCards[1]);
+            const suited = heGetCardSuit(holeCards[0]) === heGetCardSuit(holeCards[1]);
+            const high = Math.max(v1, v2), low = Math.min(v1, v2);
+            const gap = high - low, pair = v1 === v2;
+            if (pair) { if (high >= 11) return 0.95; if (high >= 8) return 0.75; return 0.6; }
+            if (high === 14 && low >= 12 && suited) return 0.9;
+            if (high === 14 && low >= 12) return 0.85;
+            if (high === 14 && low >= 10) return 0.7;
+            if (high === 14) return 0.5;
+            if (suited && gap <= 2 && high >= 10) return 0.65;
+            if (high >= 12 && low >= 10) return 0.6;
+            if (suited && gap <= 3) return 0.45;
+            if (gap <= 2 && high >= 8) return 0.4;
+            return 0.2;
+        }
+
+        function heAiDecide(player) {
+            const { communityCards, currentBet, pot } = holdemGame;
+            const toCall = currentBet - player.currentBet;
+            let strength;
+            if (communityCards.length === 0) {
+                strength = hePreflopStrength(player.holeCards);
+            } else {
+                const allCards = [...player.holeCards, ...communityCards];
+                if (allCards.length >= 5) {
+                    const best = heBestFiveFromSeven(allCards);
+                    if (best.strength >= 6000000) strength = 0.95;
+                    else if (best.strength >= 4000000) strength = 0.8;
+                    else if (best.strength >= 3000000) strength = 0.7;
+                    else if (best.strength >= 2000000) strength = 0.6;
+                    else if (best.strength >= 1000000) strength = 0.45;
+                    else strength = 0.3;
+                } else {
+                    strength = hePreflopStrength(player.holeCards);
+                }
+            }
+            strength += (Math.random() - 0.5) * 0.15;
+            if (Math.random() < 0.08) strength = 0.85;
+
+            if (toCall === 0) {
+                if (strength > 0.75) {
+                    const amt = Math.min(Math.floor(pot * (0.5 + Math.random() * 0.5)), player.chips);
+                    return { action: 'raise', amount: Math.max(amt, HE_BIG_BLIND) };
+                }
+                return { action: 'check' };
+            }
+            const potOdds = toCall / (pot + toCall);
+            if (strength > 0.8) {
+                const amt = Math.min(Math.floor(pot * (0.5 + Math.random() * 0.5)), player.chips);
+                return { action: 'raise', amount: Math.max(amt, currentBet + HE_BIG_BLIND) };
+            }
+            if (strength > 0.5 || (strength > 0.35 && potOdds < 0.3)) return { action: 'call' };
+            if (toCall <= HE_BIG_BLIND && strength > 0.25) return { action: 'call' };
+            return { action: 'fold' };
+        }
+
+        // Game logic
+        function heStartNewHand() {
+            if (!holdemActive) return;
+            holdemGame.deck = shuffle(cards);
+            holdemGame.communityCards = [];
+            holdemGame.pot = 0;
+            holdemGame.currentBet = 0;
+            holdemGame.phase = 'preflop';
+            holdemGame.handInProgress = true;
+            holdemGame.players.forEach(p => { p.holeCards = []; p.currentBet = 0; p.folded = false; p.allIn = false; });
+            holdemGame.players = holdemGame.players.filter(p => p.chips > 0 || !p.isAI);
+            if (holdemGame.players[0].chips <= 0) { heEndGame(false); return; }
+            if (holdemGame.players.filter(p => p.isAI && p.chips > 0).length === 0) { heEndGame(true); return; }
+            holdemGame.players.forEach(p => { p.holeCards = [holdemGame.deck.pop(), holdemGame.deck.pop()]; });
+            const sbIdx = (holdemGame.dealerIndex + 1) % holdemGame.players.length;
+            const bbIdx = (holdemGame.dealerIndex + 2) % holdemGame.players.length;
+            hePostBlind(holdemGame.players[sbIdx], HE_SMALL_BLIND);
+            hePostBlind(holdemGame.players[bbIdx], HE_BIG_BLIND);
+            holdemGame.currentBet = HE_BIG_BLIND;
+            heRender();
+            setTimeout(() => heRunBettingRound((bbIdx + 1) % holdemGame.players.length), 800);
+        }
+
+        function hePostBlind(player, amount) {
+            const actual = Math.min(amount, player.chips);
+            player.chips -= actual;
+            player.currentBet = actual;
+            holdemGame.pot += actual;
+            if (player.chips === 0) player.allIn = true;
+        }
+
+        function heActivePlayers() { return holdemGame.players.filter(p => !p.folded && !p.allIn); }
+        function heNonFolded() { return holdemGame.players.filter(p => !p.folded); }
+
+        async function heRunBettingRound(startIndex) {
+            if (!holdemActive) return;
+            let lastRaiserIndex = -1, currentIndex = startIndex, actionsTaken = 0;
+            const numPlayers = holdemGame.players.length;
+            while (true) {
+                if (!holdemActive) return;
+                const player = holdemGame.players[currentIndex];
+                if (player.folded || player.allIn) {
+                    currentIndex = (currentIndex + 1) % numPlayers;
+                    if (currentIndex === lastRaiserIndex) break;
+                    if (heActivePlayers().length === 0) break;
+                    continue;
+                }
+                if (heNonFolded().length === 1) { heAwardPot(heNonFolded()[0]); return; }
+                holdemGame.activePlayerIndex = currentIndex;
+                heRender();
+                let action;
+                if (player.isAI) {
+                    await heDelay(800 + Math.random() * 600);
+                    action = heAiDecide(player);
+                } else {
+                    action = await heGetPlayerAction();
+                }
+                if (!holdemActive) return;
+                heApplyAction(player, action);
+                actionsTaken++;
+                if (action.action === 'raise') lastRaiserIndex = currentIndex;
+                const nextIndex = (currentIndex + 1) % numPlayers;
+                if (lastRaiserIndex === -1 && actionsTaken >= numPlayers - holdemGame.players.filter(p => p.folded || p.allIn).length) break;
+                if (lastRaiserIndex >= 0 && nextIndex === lastRaiserIndex) break;
+                if (heActivePlayers().length <= 1 && heNonFolded().length > 1) break;
+                currentIndex = nextIndex;
+            }
+            if (heNonFolded().length === 1) { heAwardPot(heNonFolded()[0]); return; }
+            heAdvancePhase();
+        }
+
+        function heApplyAction(player, action) {
+            switch (action.action) {
+                case 'fold': player.folded = true; break;
+                case 'check': break;
+                case 'call': {
+                    const toCall = Math.min(holdemGame.currentBet - player.currentBet, player.chips);
+                    player.chips -= toCall; player.currentBet += toCall; holdemGame.pot += toCall;
+                    if (player.chips === 0) player.allIn = true;
+                    break;
+                }
+                case 'raise': {
+                    const totalBet = Math.min(action.amount, player.chips + player.currentBet);
+                    const toAdd = totalBet - player.currentBet;
+                    player.chips -= toAdd; player.currentBet = totalBet; holdemGame.pot += toAdd; holdemGame.currentBet = totalBet;
+                    if (player.chips === 0) player.allIn = true;
+                    break;
+                }
+            }
+        }
+
+        function heAdvancePhase() {
+            if (!holdemActive) return;
+            holdemGame.players.forEach(p => p.currentBet = 0);
+            holdemGame.currentBet = 0;
+            if (holdemGame.phase === 'preflop') {
+                holdemGame.phase = 'flop';
+                holdemGame.communityCards.push(holdemGame.deck.pop(), holdemGame.deck.pop(), holdemGame.deck.pop());
+            } else if (holdemGame.phase === 'flop') {
+                holdemGame.phase = 'turn';
+                holdemGame.communityCards.push(holdemGame.deck.pop());
+            } else if (holdemGame.phase === 'turn') {
+                holdemGame.phase = 'river';
+                holdemGame.communityCards.push(holdemGame.deck.pop());
+            } else if (holdemGame.phase === 'river') {
+                holdemGame.phase = 'showdown';
+                heRender();
+                setTimeout(() => heResolveShowdown(), 1500);
+                return;
+            }
+            holdemGame.activePlayerIndex = -1;
+            heRender();
+            if (heActivePlayers().length <= 1) {
+                setTimeout(() => heAdvancePhase(), 1000);
+            } else {
+                const startIdx = (holdemGame.dealerIndex + 1) % holdemGame.players.length;
+                setTimeout(() => heRunBettingRound(startIdx), 800);
+            }
+        }
+
+        function heResolveShowdown() {
+            if (!holdemActive) return;
+            const candidates = heNonFolded();
+            let bestPlayer = null, bestStrength = -1, bestType = '';
+            candidates.forEach(p => {
+                const result = heBestFiveFromSeven([...p.holeCards, ...holdemGame.communityCards]);
+                p._result = result;
+                if (result.strength > bestStrength) { bestStrength = result.strength; bestPlayer = p; bestType = result.type; }
+            });
+            const winners = candidates.filter(p => p._result.strength === bestStrength);
+            holdemGame.phase = 'showdown';
+            heRender();
+            setTimeout(() => {
+                if (!holdemActive) return;
+                if (winners.length === 1) {
+                    heAwardPot(bestPlayer, bestType);
+                } else {
+                    const share = Math.floor(holdemGame.pot / winners.length);
+                    winners.forEach(w => w.chips += share);
+                    holdemGame.pot = 0;
+                    const names = winners.map(w => w.isAI ? w.name : 'you');
+                    heShowBanner(`split pot - ${names.join(' & ')} - ${bestType}`);
+                    setTimeout(() => heNextHand(), 3500);
+                }
+            }, 1200);
+        }
+
+        function heAwardPot(winner, handType) {
+            winner.chips += holdemGame.pot;
+            const name = winner.isAI ? winner.name : 'you';
+            const verb = winner.isAI ? 'wins' : 'win';
+            const msg = handType ? `${name} ${verb} with ${handType}` : `${name} ${verb}`;
+            holdemGame.pot = 0;
+            heRender();
+            heShowBanner(msg);
+            setTimeout(() => heNextHand(), 3500);
+        }
+
+        function heNextHand() {
+            if (!holdemActive) return;
+            heHideBanner();
+            holdemGame.dealerIndex = (holdemGame.dealerIndex + 1) % holdemGame.players.length;
+            holdemGame.phase = 'idle';
+            holdemGame.handInProgress = false;
+            setTimeout(() => heStartNewHand(), 800);
+        }
+
+        function heEndGame(playerWon) {
+            holdemGame.phase = 'gameover';
+            holdemGame.handInProgress = false;
+            heRender();
+        }
+
+        // Player input with timer
+        function heGetPlayerAction() {
+            holdemGame.waitingForPlayer = true;
+            heTimerStart = Date.now();
+            heRender();
+            heStartTimer();
+            return new Promise(resolve => { hePlayerResolve = resolve; });
+        }
+
+        function heStartTimer() {
+            if (heTimerInterval) clearInterval(heTimerInterval);
+            heTimerInterval = setInterval(() => {
+                const elapsed = Date.now() - heTimerStart;
+                const remaining = Math.max(0, 1 - elapsed / HE_TURN_TIME);
+                const fill = document.querySelector('.holdem-timer-fill');
+                if (fill) {
+                    fill.style.width = (remaining * 100) + '%';
+                    if (remaining < 0.25) fill.classList.add('urgent');
+                    else fill.classList.remove('urgent');
+                }
+                if (elapsed >= HE_TURN_TIME) {
+                    clearInterval(heTimerInterval); heTimerInterval = null;
+                    heSubmitAction({ action: 'fold' });
+                }
+            }, 50);
+        }
+
+        function heSubmitAction(action) {
+            if (hePlayerResolve) {
+                if (heTimerInterval) { clearInterval(heTimerInterval); heTimerInterval = null; }
+                holdemGame.waitingForPlayer = false;
+                const resolve = hePlayerResolve;
+                hePlayerResolve = null;
+                resolve(action);
+            }
+        }
+
+        function heHandleRaise(minRaise) {
+            const hero = holdemGame.players[0];
+            const maxRaise = hero.chips + hero.currentBet;
+            const potRaise = Math.min(holdemGame.pot + holdemGame.currentBet, maxRaise);
+            heSubmitAction({ action: 'raise', amount: Math.max(potRaise, minRaise) });
+        }
+
+        // Rendering
+        function heRender() {
+            if (!holdemActive) return;
+            const hero = holdemGame.players[0];
+            const opponents = holdemGame.players.slice(1);
+            const CARD_BACK = '\u{1F0A0}';
+
+            if (holdemGame.phase === 'gameover') {
+                const won = hero.chips > 0;
+                canvas.innerHTML = `<div class="holdem-game" style="margin-top:60px">
+                    <div style="text-align:center">
+                        <div style="font-size:18px;font-weight:500;margin-bottom:12px">${won ? 'you win' : 'busted'}</div>
+                        <div style="color:#999;margin-bottom:20px">${won ? 'all opponents eliminated' : 'out of chips'}</div>
+                        <button class="holdem-btn" onclick="holdemGame.players=heCreatePlayers();holdemGame.dealerIndex=0;heStartNewHand()">play again</button>
+                    </div>
+                </div>`;
+                return;
+            }
+
+            let html = '<div class="holdem-game">';
+
+            // Opponents
+            html += '<div class="holdem-opponents">';
+            opponents.forEach((opp, i) => {
+                const isActive = holdemGame.activePlayerIndex === i + 1;
+                const isDealer = holdemGame.dealerIndex === i + 1;
+                html += `<div class="holdem-player-area ${opp.folded ? 'folded' : ''} ${isActive ? 'active-turn' : ''}">`;
+                html += `<div class="holdem-player-info"><span class="holdem-player-name">${opp.name}</span>`;
+                if (isDealer) html += ` <span class="holdem-dealer-chip">D</span>`;
+                html += `</div>`;
+                html += `<div class="holdem-player-chips">${opp.chips}</div>`;
+                html += `<div class="holdem-cards-row">`;
+                if (opp.holeCards.length > 0) {
+                    if (holdemGame.phase === 'showdown' && !opp.folded) {
+                        opp.holeCards.forEach(c => { html += `<div class="holdem-card" style="color:${heGetCardColor(c)}">${c}</div>`; });
+                    } else {
+                        html += `<div class="holdem-card" style="color:navy">${CARD_BACK}</div><div class="holdem-card" style="color:navy">${CARD_BACK}</div>`;
+                    }
+                }
+                html += `</div>`;
+                html += `<div class="holdem-player-bet">${opp.currentBet > 0 ? 'bet ' + opp.currentBet : ''}</div>`;
+                html += `</div>`;
+            });
+            html += '</div>';
+
+            // Community
+            html += '<div class="holdem-community-section">';
+            html += `<div class="holdem-phase-label">${holdemGame.phase !== 'preflop' ? holdemGame.phase : ''}</div>`;
+            html += '<div class="holdem-community-cards">';
+            for (let i = 0; i < 5; i++) {
+                if (i < holdemGame.communityCards.length) {
+                    const c = holdemGame.communityCards[i];
+                    html += `<div class="holdem-community-card" style="color:${heGetCardColor(c)}">${c}</div>`;
+                } else {
+                    html += `<div class="holdem-community-card empty"></div>`;
+                }
+            }
+            html += '</div>';
+            html += `<div class="holdem-pot">pot: <span class="holdem-pot-amount">${holdemGame.pot}</span></div>`;
+            html += '</div>';
+
+            // Hero
+            const heroIsDealer = holdemGame.dealerIndex === 0;
+            html += `<div class="holdem-hero ${hero.folded ? 'folded' : ''}">`;
+            html += `<div class="holdem-hero-cards">`;
+            if (hero.holeCards.length > 0) {
+                hero.holeCards.forEach(c => { html += `<div class="holdem-hero-card" style="color:${heGetCardColor(c)}">${c}</div>`; });
+            }
+            html += `</div>`;
+            html += `<div class="holdem-player-info"><span class="holdem-player-name">you</span>`;
+            if (heroIsDealer) html += ` <span class="holdem-dealer-chip">D</span>`;
+            html += ` <span class="holdem-player-chips">${hero.chips}</span></div>`;
+            html += `<div class="holdem-player-bet">${hero.currentBet > 0 ? 'bet ' + hero.currentBet : ''}</div>`;
+
+            // Actions
+            html += '<div class="holdem-actions">';
+            if (holdemGame.waitingForPlayer && !hero.folded && !hero.allIn) {
+                const toCall = holdemGame.currentBet - hero.currentBet;
+                html += `<button class="holdem-btn fold" onclick="heSubmitAction({action:'fold'})">fold</button>`;
+                if (toCall === 0) {
+                    html += `<button class="holdem-btn" onclick="heSubmitAction({action:'check'})">check</button>`;
+                } else {
+                    html += `<button class="holdem-btn" onclick="heSubmitAction({action:'call'})">call ${toCall}</button>`;
+                }
+                html += `<button class="holdem-btn raise" onclick="heHandleRaise(${holdemGame.currentBet + HE_BIG_BLIND})">raise</button>`;
+            }
+            html += '</div>';
+            if (holdemGame.waitingForPlayer && !hero.folded && !hero.allIn) {
+                html += '<div class="holdem-timer-bar"><div class="holdem-timer-fill" style="width:100%"></div></div>';
+            }
+            html += '</div>'; // hero
+            html += '</div>'; // holdem-game
+
+            canvas.innerHTML = html;
+        }
+
+        function heShowBanner(text) {
+            let banner = document.querySelector('.holdem-winner-banner');
+            if (!banner) {
+                banner = document.createElement('div');
+                banner.className = 'holdem-winner-banner';
+                document.body.appendChild(banner);
+            }
+            banner.textContent = text;
+            setTimeout(() => banner.classList.add('visible'), 50);
+        }
+
+        function heHideBanner() {
+            const banner = document.querySelector('.holdem-winner-banner');
+            if (banner) banner.classList.remove('visible');
+        }
+
+        function heDelay(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+        // Keyboard shortcuts for holdem
+        document.addEventListener('keydown', (e) => {
+            if (!holdemActive || !holdemGame.waitingForPlayer) return;
+            const hero = holdemGame.players[0];
+            const toCall = holdemGame.currentBet - hero.currentBet;
+            if (e.key === 'Enter' || e.key === 'c') {
+                e.preventDefault();
+                if (toCall === 0) heSubmitAction({ action: 'check' });
+                else heSubmitAction({ action: 'call' });
+            } else if (e.key === 'f') {
+                e.preventDefault();
+                heSubmitAction({ action: 'fold' });
+            } else if (e.key === 'r') {
+                e.preventDefault();
+                heHandleRaise(holdemGame.currentBet + HE_BIG_BLIND);
+            }
+        });
     </script>
 </body>
 </html>
