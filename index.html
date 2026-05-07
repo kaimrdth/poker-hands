@@ -481,14 +481,101 @@
             }
         }
         
-        /* Hold'em mode item */
-        .hand-type-item.holdem-item {
-            color: rgb(6, 174, 67);
-            font-weight: 500;
+        /* Landing page */
+        .landing {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 40px;
+            min-height: 100vh;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            z-index: 200;
+            background: #f8f8f8;
+            transition: opacity 0.6s ease;
         }
-        .hand-type-item.holdem-item:hover,
-        .hand-type-item.holdem-item.active {
-            color: rgb(4, 140, 54);
+        .landing.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        .landing-title {
+            font-size: 28px;
+            color: #333;
+            font-weight: 400;
+        }
+        .landing-options {
+            display: flex;
+            gap: 50px;
+        }
+        .landing-option {
+            font-size: 16px;
+            color: #999;
+            cursor: pointer;
+            transition: color 0.3s ease;
+            text-align: center;
+            padding: 8px 0;
+        }
+        .landing-option:hover {
+            color: #333;
+        }
+        .landing-option .landing-desc {
+            font-size: 11px;
+            color: #ccc;
+            margin-top: 6px;
+            transition: color 0.3s ease;
+        }
+        .landing-option:hover .landing-desc {
+            color: #aaa;
+        }
+
+        /* Mode nav */
+        .mode-nav {
+            position: fixed;
+            top: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 32px;
+            font-size: 13px;
+            color: #bbb;
+            z-index: 50;
+            opacity: 0;
+            transition: opacity 0.6s ease;
+        }
+        .mode-nav.visible {
+            opacity: 1;
+        }
+        .mode-nav-item {
+            cursor: pointer;
+            transition: color 0.3s ease;
+            padding-bottom: 4px;
+            border-bottom: 1.5px solid transparent;
+        }
+        .mode-nav-item:hover {
+            color: #666;
+        }
+        .mode-nav-item.active {
+            color: #333;
+            border-bottom-color: #333;
+        }
+
+        @media (max-width: 768px) {
+            .landing-options {
+                flex-direction: column;
+                gap: 28px;
+            }
+            .landing-title {
+                font-size: 22px;
+            }
+            .landing-option {
+                font-size: 15px;
+            }
+            .mode-nav {
+                top: 16px;
+                gap: 24px;
+                font-size: 12px;
+            }
         }
 
         /* Hold'em game styles */
@@ -643,17 +730,6 @@
             justify-content: center;
             font-weight: 600;
         }
-        .holdem-exit {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            font-size: 13px;
-            color: #999;
-            cursor: pointer;
-            transition: color 0.3s ease;
-            z-index: 50;
-        }
-        .holdem-exit:hover { color: #333; }
 
         @media (max-width: 768px) {
             .holdem-card { width: 55px; height: 76px; font-size: 82px; }
@@ -672,7 +748,31 @@
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="landing" id="landing">
+        <div class="landing-title">poker hands</div>
+        <div class="landing-options">
+            <div class="landing-option" onclick="enterMode('hands')">
+                hands
+                <div class="landing-desc">browse hand types</div>
+            </div>
+            <div class="landing-option" onclick="enterMode('evaluator')">
+                evaluator
+                <div class="landing-desc">compare random deals</div>
+            </div>
+            <div class="landing-option" onclick="enterMode('play')">
+                play
+                <div class="landing-desc">hold'em vs AI</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mode-nav" id="modeNav">
+        <div class="mode-nav-item" data-mode="hands" onclick="switchMode('hands')">hands</div>
+        <div class="mode-nav-item" data-mode="evaluator" onclick="switchMode('evaluator')">evaluator</div>
+        <div class="mode-nav-item" data-mode="play" onclick="switchMode('play')">play</div>
+    </div>
+
+    <div class="container" id="mainContainer" style="display:none">
         <div class="input-section">
             <div class="input-container">
                 <input type="text" id="handInput" placeholder="poker hands" />
@@ -691,9 +791,8 @@
             <div class="hand-type-item" data-hand="two pair">two pair</div>
             <div class="hand-type-item" data-hand="pair">pair</div>
             <div class="hand-type-item" data-hand="random">random</div>
-            <div class="hand-type-item holdem-item" data-hand="hold'em">hold'em</div>
         </div>
-        
+
         <div class="controls">
             <div class="control-item">
                 <span>deal with</span>
@@ -719,7 +818,89 @@
         const canvas = document.getElementById('canvas');
         const handInput = document.getElementById('handInput');
         const inputOverlay = document.getElementById('inputOverlay');
-        
+
+        // ============== MODE MANAGEMENT ==============
+        let currentMode = null; // 'hands', 'evaluator', 'play'
+
+        function enterMode(mode) {
+            const landing = document.getElementById('landing');
+            landing.classList.add('hidden');
+            setTimeout(() => { landing.style.display = 'none'; }, 600);
+
+            document.getElementById('mainContainer').style.display = '';
+            document.getElementById('modeNav').classList.add('visible');
+
+            switchMode(mode);
+        }
+
+        function switchMode(mode) {
+            // Clean up previous mode
+            if (currentMode === 'play' && mode !== 'play') {
+                exitHoldemMode();
+            }
+            if (currentMode && currentMode !== 'play' && mode === 'play') {
+                // Clean up hands/evaluator state
+                if (autoRefreshInterval) { clearInterval(autoRefreshInterval); autoRefreshInterval = null; }
+                clearAnimationTimeouts();
+                canvas.innerHTML = '';
+                currentHandType = null;
+            }
+
+            currentMode = mode;
+
+            // Update nav indicator
+            document.querySelectorAll('.mode-nav-item').forEach(item => {
+                item.classList.toggle('active', item.dataset.mode === mode);
+            });
+
+            if (mode === 'hands') {
+                // Show hands UI: input, hand types (without random/holdem), controls
+                document.querySelector('.input-section').style.display = '';
+                document.querySelector('.hand-types').style.display = '';
+                document.querySelector('.controls').style.display = '';
+                const helpMsg = document.querySelector('.help-message');
+                if (helpMsg) helpMsg.style.display = '';
+
+                // Show all hand-type items
+                document.querySelectorAll('.hand-type-item').forEach(item => {
+                    item.style.display = '';
+                });
+
+                handInput.placeholder = 'poker hands';
+                handInput.value = '';
+                inputOverlay.innerHTML = '';
+                canvas.innerHTML = '';
+                currentHandType = null;
+                firstHandDealt = false;
+                document.querySelector('.hand-types').classList.remove('visible');
+                document.querySelector('.controls').classList.remove('visible');
+                handInput.focus();
+            } else if (mode === 'evaluator') {
+                // Show evaluator: input visible but auto-start with random
+                document.querySelector('.input-section').style.display = '';
+                document.querySelector('.hand-types').style.display = 'none';
+                document.querySelector('.controls').style.display = '';
+                const helpMsg = document.querySelector('.help-message');
+                if (helpMsg) helpMsg.style.display = 'none';
+
+                handInput.value = 'random';
+                updateInputColors('random');
+                firstHandDealt = true;
+                document.querySelector('.controls').classList.add('visible');
+                displayHands('random');
+            } else if (mode === 'play') {
+                // Hide hands UI, enter holdem
+                document.querySelector('.input-section').style.display = 'none';
+                document.querySelector('.hand-types').style.display = 'none';
+                document.querySelector('.controls').style.display = 'none';
+                const helpMsg = document.querySelector('.help-message');
+                if (helpMsg) helpMsg.style.display = 'none';
+                canvas.innerHTML = '';
+
+                enterHoldemMode();
+            }
+        }
+
         // Fisher-Yates shuffle algorithm for proper randomization
         function shuffle(array) {
             const shuffled = [...array];
@@ -758,12 +939,6 @@
                     inputOverlay.innerHTML = '<span class="validated-part">straight </span>' + flushPart;
                     return;
                 }
-            }
-
-            // Hold'em gets green coloring
-            if (value.toLowerCase() === "hold'em") {
-                inputOverlay.innerHTML = '<span style="color:rgb(6,174,67);font-weight:500">' + value.toLowerCase() + '</span>';
-                return;
             }
 
             // Normal coloring based on validation
@@ -830,8 +1005,7 @@
                 'four of a kind': 'four cards of the same rank',
                 'straight flush': 'straight and flush combined',
                 'royal flush': 'A-K-Q-J-10 all same suit',
-                'random': 'random five cards',
-                "hold'em": 'texas hold\'em vs AI'
+                'random': 'random five cards'
             };
             return definitions[handType.toLowerCase()] || '';
         }
@@ -844,7 +1018,7 @@
         let animationTimeouts = [];
         
         // Hand type navigation
-        const handTypes = ['royal flush', 'straight flush', 'four of a kind', 'full house', 'flush', 'straight', 'three of a kind', 'two pair', 'pair', 'random', "hold'em"];
+        const handTypes = ['royal flush', 'straight flush', 'four of a kind', 'full house', 'flush', 'straight', 'three of a kind', 'two pair', 'pair', 'random'];
         let currentHandIndex = -1;
         let userIsTyping = false;
         let shouldClearOnNextType = false;
@@ -1314,12 +1488,6 @@
                 });
             }
             
-            // Hold'em mode - switch to game
-            if (handType.toLowerCase() === "hold'em") {
-                enterHoldemMode();
-                return;
-            }
-
             // Validate hand type
             const validHandTypes = ['pair', 'two pair', 'three of a kind', 'straight', 'flush', 'full house', 'four of a kind', 'straight flush', 'royal flush'];
             if (!validHandTypes.includes(handType.toLowerCase()) && handType.toLowerCase() !== 'random') {
@@ -1570,13 +1738,13 @@
             
             if (value) {
                 const validHandTypes = ['pair', 'two pair', 'three of a kind', 'straight', 'flush', 'full house', 'four of a kind', 'straight flush', 'royal flush'];
-                if (validHandTypes.includes(value.toLowerCase()) || value.toLowerCase() === 'random' || value.toLowerCase() === "hold'em") {
+                if (validHandTypes.includes(value.toLowerCase()) || value.toLowerCase() === 'random') {
                     // Cancel initial help message if user types valid hand before it appears
                     if (initialHelpTimeout) {
                         clearTimeout(initialHelpTimeout);
                         helpMessageShown = true;
                     }
-                    
+
                     // Only trigger animation for valid hands
                     displayHands(value);
                     
@@ -1679,18 +1847,16 @@
             // Add subtle touch feedback
             item.addEventListener('touchstart', (e) => {
                 if (window.innerWidth <= 768) {
-                    const isHoldem = item.classList.contains('holdem-item');
-                    item.style.color = isHoldem ? 'rgb(4, 140, 54)' : '#ff0000';
+                    item.style.color = '#ff0000';
                     item.style.transition = 'color 0.1s ease';
                 }
             });
-            
+
             item.addEventListener('touchend', (e) => {
                 if (window.innerWidth <= 768) {
                     setTimeout(() => {
                         if (!item.classList.contains('active')) {
-                            const isHoldem = item.classList.contains('holdem-item');
-                            item.style.color = isHoldem ? 'rgb(6, 174, 67)' : '#666';
+                            item.style.color = '#666';
                         }
                         item.style.transition = 'color 0.3s ease';
                     }, 150);
@@ -1702,9 +1868,9 @@
         const isMobile = () => window.innerWidth <= 768;
         
         document.addEventListener('click', (e) => {
+            if (!currentMode || currentMode === 'play') return;
             // Don't force focus on mobile to preserve the minimalist experience
             if (isMobile()) {
-                // Only focus if user clicks input directly or on empty space
                 if (e.target === handInput || e.target === document.body || e.target.closest('.container')) {
                     handInput.focus();
                 }
@@ -1712,39 +1878,25 @@
             }
             handInput.focus();
         });
-        
+
         handInput.addEventListener('blur', () => {
-            // Don't force focus on mobile to allow virtual keyboard to hide
+            if (!currentMode || currentMode === 'play') return;
             if (!isMobile()) {
                 setTimeout(() => handInput.focus(), 0);
             }
         });
 
-        // Initialize with empty state and focus input
+        // Initialize - wait for mode selection from landing
         canvas.innerHTML = '';
-        handInput.focus();
-        
-        // Create help message near input
+
+        // Create help message element (used by hands mode)
         const helpDiv = document.createElement('div');
         helpDiv.className = 'help-message';
+        helpDiv.style.display = 'none';
         document.body.appendChild(helpDiv);
-        
+
         let helpMessageShown = false;
         let initialHelpTimeout;
-        
-        // Show initial help message sequence with typing animation
-        initialHelpTimeout = setTimeout(() => {
-            if (!helpMessageShown) {
-                helpDiv.classList.add('fade-in');
-                typeMessage(helpDiv, 'start typing: pair, two pair, three of a kind, straight, flush, full house, four of a kind, straight flush, royal flush, or random', 30);
-                helpMessageShown = true;
-                
-                // Fade out help message after it's shown
-                setTimeout(() => {
-                    helpDiv.classList.remove('fade-in');
-                }, 6000);
-            }
-        }, 2000);
         // ============== HOLD'EM GAME ==============
         let holdemActive = false;
         let holdemGame = {
@@ -1769,28 +1921,14 @@
 
         function enterHoldemMode() {
             holdemActive = true;
-            // Hide visualizer UI
-            document.querySelector('.input-section').style.display = 'none';
-            document.querySelector('.hand-types').style.display = 'none';
-            document.querySelector('.controls').style.display = 'none';
-            const helpMsg = document.querySelector('.help-message');
-            if (helpMsg) helpMsg.style.display = 'none';
-            // Stop auto-refresh
+            // Stop any existing hand visualizer state
             if (autoRefreshInterval) { clearInterval(autoRefreshInterval); autoRefreshInterval = null; }
             clearAnimationTimeouts();
-            // Show exit button
-            let exitBtn = document.querySelector('.holdem-exit');
-            if (!exitBtn) {
-                exitBtn = document.createElement('div');
-                exitBtn.className = 'holdem-exit';
-                exitBtn.textContent = '\u2190 back';
-                exitBtn.onclick = exitHoldemMode;
-                document.body.appendChild(exitBtn);
-            }
-            exitBtn.style.display = 'block';
             // Start game
-            holdemGame.players = heCreatePlayers();
-            holdemGame.dealerIndex = 0;
+            if (!holdemGame.players || holdemGame.players.length === 0) {
+                holdemGame.players = heCreatePlayers();
+                holdemGame.dealerIndex = 0;
+            }
             heStartNewHand();
         }
 
@@ -1801,22 +1939,10 @@
             hePlayerResolve = null;
             holdemGame.handInProgress = false;
             holdemGame.phase = 'idle';
-            // Hide exit button and banner
-            const exitBtn = document.querySelector('.holdem-exit');
-            if (exitBtn) exitBtn.style.display = 'none';
+            // Remove banner
             const banner = document.querySelector('.holdem-winner-banner');
             if (banner) banner.remove();
-            // Restore visualizer UI
-            document.querySelector('.input-section').style.display = '';
-            document.querySelector('.hand-types').style.display = '';
-            document.querySelector('.controls').style.display = '';
-            const helpMsg = document.querySelector('.help-message');
-            if (helpMsg) helpMsg.style.display = '';
             canvas.innerHTML = '';
-            handInput.value = '';
-            inputOverlay.innerHTML = '';
-            currentHandType = null;
-            handInput.focus();
         }
 
         function heCreatePlayers() {
