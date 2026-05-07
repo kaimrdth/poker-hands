@@ -19,6 +19,8 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            padding-top: 60px;
+            padding-bottom: 20px;
         }
         
         .input-section {
@@ -532,7 +534,7 @@
         /* Mode nav */
         .mode-nav {
             position: fixed;
-            top: 24px;
+            top: 0;
             left: 50%;
             transform: translateX(-50%);
             display: flex;
@@ -542,6 +544,8 @@
             z-index: 50;
             opacity: 0;
             transition: opacity 0.6s ease;
+            padding: 20px 30px 12px;
+            background: linear-gradient(to bottom, #f8f8f8 60%, transparent);
         }
         .mode-nav.visible {
             opacity: 1;
@@ -875,6 +879,21 @@
                 document.querySelector('.hand-types').classList.remove('visible');
                 document.querySelector('.controls').classList.remove('visible');
                 handInput.focus();
+
+                // Show help prompt after delay
+                helpMessageShown = false;
+                if (initialHelpTimeout) clearTimeout(initialHelpTimeout);
+                initialHelpTimeout = setTimeout(() => {
+                    if (!helpMessageShown && currentMode === 'hands') {
+                        const helpDiv = document.querySelector('.help-message');
+                        if (helpDiv) {
+                            helpDiv.classList.add('fade-in');
+                            typeMessage(helpDiv, 'start typing: pair, two pair, three of a kind, straight, flush, full house, four of a kind, straight flush, royal flush, or random', 30);
+                            helpMessageShown = true;
+                            setTimeout(() => { helpDiv.classList.remove('fade-in'); }, 6000);
+                        }
+                    }
+                }, 2000);
             } else if (mode === 'evaluator') {
                 // Show evaluator: input visible but auto-start with random
                 document.querySelector('.input-section').style.display = '';
